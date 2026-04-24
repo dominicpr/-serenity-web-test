@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Serenity Admin — Servicios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <link rel="stylesheet" href="booking_admin.css" />
+</head>
+<body class="admin-body">
+<div id="admin-app" class="admin-app-wrapper">
+
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="admin-header-brand">
+            <span class="material-symbols-outlined admin-header-icon">spa</span>
+            <span class="admin-header-title">Serenity — Admin</span>
+        </div>
+        <div class="admin-header-actions">
+            <span class="admin-badge">Gestión de Servicios</span>
+            <a href="booking.html" target="_blank" class="admin-preview-link">
+                <span>Ver Booking</span>
+                <span class="material-symbols-outlined admin-preview-link-icon">open_in_new</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main layout -->
+    <main class="admin-main">
+
+        <!-- LEFT: Form -->
+        <section class="admin-form-panel">
+            <div class="admin-form-card">
+                <div class="admin-form-header">
+                    <h2 id="form-mode-title" class="admin-form-title">Nuevo Servicio</h2>
+                    <span id="form-mode-badge" class="admin-form-mode-badge admin-form-mode-new">Nuevo</span>
+                </div>
+                <div class="admin-form-divider"></div>
+                <form id="svc-form" class="admin-form" onsubmit="return false;">
+
+                    <div class="admin-field-group">
+                        <label for="inp-svc-name" class="admin-label">Nombre del Servicio *</label>
+                        <div class="admin-input-wrap">
+                            <span class="material-symbols-outlined admin-input-icon">spa</span>
+                            <input id="inp-svc-name" type="text" class="admin-input" placeholder="Ej: Hot Stone Therapy" required />
+                        </div>
+                    </div>
+
+                    <div class="admin-field-group">
+                        <label for="inp-svc-cat" class="admin-label">Categoría *</label>
+                        <div class="admin-input-wrap">
+                            <span class="material-symbols-outlined admin-input-icon">category</span>
+                            <select id="inp-svc-cat" class="admin-select">
+                                <option value="Massage">Massage</option>
+                                <option value="Facial">Facial</option>
+                                <option value="Wellness">Wellness</option>
+                                <option value="Stretching">Stretching</option>
+                                <option value="Prenatal">Prenatal</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="admin-field-group">
+                        <label for="inp-svc-desc" class="admin-label">Descripción <span class="admin-label-optional">(opcional)</span></label>
+                        <textarea id="inp-svc-desc" class="admin-textarea" rows="2" placeholder="Breve descripción..."></textarea>
+                    </div>
+
+                    <div class="admin-field-group">
+                        <label for="inp-svc-img" class="admin-label">URL de Imagen <span class="admin-label-optional">(opcional)</span></label>
+                        <div class="admin-input-wrap">
+                            <span class="material-symbols-outlined admin-input-icon">image</span>
+                            <input id="inp-svc-img" type="url" class="admin-input" placeholder="https://..." oninput="previewImg(this.value)" />
+                        </div>
+                        <div id="img-preview-wrap" class="admin-img-preview-wrap admin-img-preview-hidden">
+                            <img id="img-preview" class="admin-img-preview" src="" alt="Preview" />
+                        </div>
+                    </div>
+
+                    <div class="admin-field-group">
+                        <label class="admin-label">Precios / Duraciones *</label>
+                        <div id="prices-list" class="admin-prices-list"></div>
+                        <button type="button" onclick="addPriceRow()" class="admin-add-price-btn">
+                            <span class="material-symbols-outlined admin-add-price-icon">add_circle</span>
+                            Añadir duración
+                        </button>
+                    </div>
+
+                    <div id="form-error" class="admin-form-error admin-form-error-hidden"></div>
+
+                    <div class="admin-form-actions">
+                        <button type="button" onclick="submitForm()" class="admin-btn-save">
+                            <span class="material-symbols-outlined">save</span>
+                            <span id="btn-save-label">Guardar Servicio</span>
+                        </button>
+                        <button type="button" onclick="resetForm()" class="admin-btn-cancel">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="admin-sql-hint">
+                <span class="material-symbols-outlined admin-sql-hint-icon">info</span>
+                <p class="admin-sql-hint-text">Los cambios se guardan en Supabase y se reflejan en <strong>booking.html</strong> de inmediato.</p>
+            </div>
+        </section>
+
+        <!-- RIGHT: List + Categories -->
+        <section class="admin-services-panel">
+
+            <!-- Services List -->
+            <div class="admin-services-header">
+                <div class="admin-services-header-left">
+                    <h2 class="admin-services-title">Servicios Activos</h2>
+                    <span id="svc-count" class="admin-services-count">0 servicios</span>
+                </div>
+            </div>
+            <div id="services-list" class="admin-services-list">
+                <div id="list-loading" class="admin-list-loading">
+                    <div class="admin-spinner"></div>
+                    <span class="admin-list-loading-text">Cargando servicios...</span>
+                </div>
+            </div>
+
+            <!-- Categories Panel -->
+            <div class="admin-cats-panel">
+                <div class="admin-cats-card">
+                    <div class="admin-cats-header">
+                        <h2 class="admin-cats-title">Categorías</h2>
+                        <span id="cat-count" class="admin-services-count">0 categorías</span>
+                    </div>
+                    <div class="admin-cats-divider"></div>
+                    <div id="cats-list" class="admin-cats-list">
+                        <!-- Category items injected by JS -->
+                    </div>
+                    <div class="admin-add-cat-row">
+                        <input id="inp-new-cat" type="text" class="admin-add-cat-input"
+                            placeholder="Nueva categoría..." onkeydown="if(event.key==='Enter')addCategory()" />
+                        <button onclick="addCategory()" class="admin-add-cat-btn">
+                            <span class="material-symbols-outlined" style="font-size:14px">add</span>
+                            Añadir
+                        </button>
+                    </div>
+                </div>
+                <div class="admin-sql-hint">
+                    <span class="material-symbols-outlined admin-sql-hint-icon">info</span>
+                    <p class="admin-sql-hint-text">Las categorías se reflejan como tabs de filtro en <strong>booking.html</strong>.</p>
+                </div>
+            </div>
+            <!-- Schedule Panel -->
+            <div class="admin-sched-panel">
+                <div class="admin-sched-card">
+                    <div class="admin-sched-header">
+                        <h2 class="admin-sched-title">Horario Disponible</h2>
+                        <span id="sched-count" class="admin-services-count">0 días</span>
+                    </div>
+                    <div class="admin-sched-divider"></div>
+                    <div class="admin-sched-form">
+                        <div class="admin-sched-form-row">
+                            <span class="admin-sched-form-label">Fecha</span>
+                            <input id="inp-sched-date" type="date" class="admin-sched-date-input" />
+                        </div>
+                        <div>
+                            <p class="admin-sched-times-label">Horarios disponibles ese día</p>
+                            <div class="admin-sched-quick-btns">
+                                <button type="button" onclick="schedSelectAll()" class="admin-sched-quick-btn">All</button>
+                                <button type="button" onclick="schedSelectNone()" class="admin-sched-quick-btn">None</button>
+                                <button type="button" onclick="schedSelectMorning()" class="admin-sched-quick-btn">Morning</button>
+                                <button type="button" onclick="schedSelectAfternoon()" class="admin-sched-quick-btn">Afternoon</button>
+                                <button type="button" onclick="schedSelectEvening()" class="admin-sched-quick-btn">Evening</button>
+                            </div>
+                            <div class="admin-sched-times-grid" id="sched-times-grid"></div>
+                        </div>
+                        <button type="button" onclick="saveScheduleDay()" class="admin-sched-save-btn">
+                            <span class="material-symbols-outlined" style="font-size:14px">calendar_add_on</span>
+                            Guardar Día
+                        </button>
+                    </div>
+                    <p class="admin-sched-list-title">Días Configurados</p>
+                    <div id="sched-list" class="admin-sched-list"></div>
+                </div>
+                <div class="admin-sql-hint">
+                    <span class="material-symbols-outlined admin-sql-hint-icon">info</span>
+                    <p class="admin-sql-hint-text">Solo los días y horarios configurados aquí aparecerán en <strong>booking.html</strong>.</p>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<!-- Toast -->
+<div id="admin-toast" class="admin-toast admin-toast-hidden">
+    <span class="material-symbols-outlined admin-toast-icon">check_circle</span>
+    <span id="toast-msg">Guardado</span>
+</div>
+
+<script>
+    // ── Supabase (same credentials as booking.html) ───────────────
+    const SUPABASE_URL = 'https://chjeruoocmtjvopjajqk.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_ILZmZBLEtSXeGGdvSQMY9A_L0wErJT7';
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ── Default services (mirrors booking.html _SERVICES_DEFAULT) ─
+    const DEFAULTS = [
+        { id: 's1', cat: 'Massage', name: 'Therapeutic Massage', description: 'Classic full-body relaxation using long, graceful strokes for ultimate peace.', prices: [{ dur: '1hr', p: 95 }, { dur: '1½hr', p: 140 }, { dur: '2hr', p: 180 }], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD42yGA-WSgIy2fTLOdQQMSRSisc2JoZDQ9HVURZq0VzIV6pSn77Gmrkr8BuGCIygYWbw3UKYQS-VCWYja4CmG63oHQmSEdutKz_SKadRFcTaMHt9TTTSOMos3KEeuDSM8IVEVempyHYM6MmEpfkXLangmhhVxDOUe55KUAX1eHgy9UEtQfDY4UGsR0V-55IGdkkKspuooSn17DinnW_E17Tnm6c3oP5BfKdk8k3pJj0QLmK5Rhmfj9FBvabWRicSwELXyJLWc7uqE', sort_order: 1 },
+        { id: 's2', cat: 'Massage', name: 'Swedish Massage', description: '', prices: [{ dur: '1hr', p: 95 }, { dur: '1½hr', p: 140 }, { dur: '2hr', p: 180 }], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD42yGA-WSgIy2fTLOdQQMSRSisc2JoZDQ9HVURZq0VzIV6pSn77Gmrkr8BuGCIygYWbw3UKYQS-VCWYja4CmG63oHQmSEdutKz_SKadRFcTaMHt9TTTSOMos3KEeuDSM8IVEVempyHYM6MmEpfkXLangmhhVxDOUe55KUAX1eHgy9UEtQfDY4UGsR0V-55IGdkkKspuooSn17DinnW_E17Tnm6c3oP5BfKdk8k3pJj0QLmK5Rhmfj9FBvabWRicSwELXyJLWc7uqE', sort_order: 2 },
+        { id: 's3', cat: 'Massage', name: 'Thai Massage', description: '', prices: [{ dur: '1hr', p: 140 }, { dur: '1½hr', p: 180 }], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDHvcr-Ikb9uQde37O2c5u9vhaFsDZ5gUcMVoq5gi6YAkiQmqCnIAV6R2hvvjDUwIndGdAlZYEUx8Fhw0YjEvyNSt-jsilqmURy7HX1nsG4bJQhdJwtP1FVdBXB0qxosqyUJ79z2fdkScIxFH7I2d-IU8qEDg6nQywcTfaNaaZqrQRTJhpafLjRxmz_EQ4ZnjyB60USD2BagL7h8RjPdZvzTpJu0P2GwvQGHna9y0nopMw28WDkeSEaHMFuYhtFFkXmgf0vISzvBoA', sort_order: 3 },
+        { id: 's4', cat: 'Massage', name: 'Bamboo Sticks', description: '', prices: [{ dur: '1hr', p: 140 }, { dur: '1½hr', p: 180 }], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC183bN4befBBMJdjNZFUXzWe70sffyFfWgv3OM28dtYS42ao8wEBDu6FM3onW7qqifOrx5ShQwUR1c5EFAj_-dtx2k7dVhdnDRH5_10zcAojXKabV_ErrknJNYo2DHhfpYhqdFuG39lcIwD_h8MVrIaj7TCi883gKoCZi7MKclCfoTkeQFYFhohAFi1Mqxv46jrb44Zy0gPDzHGMkhDYxcAeJpVsrVPtoJLSbszAJC92vXuXyAGMETxHOZtB2uowmbBmyUz-e5Uec', sort_order: 4 },
+        { id: 's5', cat: 'Massage', name: 'Hot Stone Therapy', description: 'Heated volcanic stones melt away tension and balance your energy centers.', prices: [{ dur: '1hr', p: 140 }, { dur: '1½hr', p: 180 }], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC183bN4befBBMJdjNZFUXzWe70sffyFfWgv3OM28dtYS42ao8wEBDu6FM3onW7qqifOrx5ShQwUR1c5EFAj_-dtx2k7dVhdnDRH5_10zcAojXKabV_ErrknJNYo2DHhfpYhqdFuG39lcIwD_h8MVrIaj7TCi883gKoCZi7MKclCfoTkeQFYFhohAFi1Mqxv46jrb44Zy0gPDzHGMkhDYxcAeJpVsrVPtoJLSbszAJC92vXuXyAGMETxHOZtB2uowmbBmyUz-e5Uec', sort_order: 5 },
+        { id: 's6', cat: 'Wellness', name: 'Reflexology', description: 'Therapeutic pressure points focused on hands and feet to restore bodily balance.', prices: [{ dur: '1hr', p: 140 }, { dur: '1½hr', p: 180 }], img: '', sort_order: 6 },
+        { id: 's7', cat: 'Wellness', name: 'Cupping', description: '', prices: [{ dur: '1hr', p: 140 }, { dur: '1½hr', p: 180 }], img: '', sort_order: 7 },
+        { id: 's8', cat: 'Wellness', name: 'Serenity Scrub', description: '', prices: [{ dur: '1hr', p: 140 }, { dur: '1½hr', p: 180 }], img: '', sort_order: 8 },
+        { id: 's9', cat: 'Stretching', name: 'Fascia Stretch Therapy / FST', description: '', prices: [{ dur: '½hr', p: 75 }, { dur: '1hr', p: 140 }], img: '', sort_order: 9 },
+        { id: 's10', cat: 'Prenatal', name: 'Prenatal', description: '', prices: [{ dur: '1hr', p: 95 }, { dur: '1½hr', p: 140 }, { dur: '2hr', p: 180 }], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD42yGA-WSgIy2fTLOdQQMSRSisc2JoZDQ9HVURZq0VzIV6pSn77Gmrkr8BuGCIygYWbw3UKYQS-VCWYja4CmG63oHQmSEdutKz_SKadRFcTaMHt9TTTSOMos3KEeuDSM8IVEVempyHYM6MmEpfkXLangmhhVxDOUe55KUAX1eHgy9UEtQfDY4UGsR0V-55IGdkkKspuooSn17DinnW_E17Tnm6c3oP5BfKdk8k3pJj0QLmK5Rhmfj9FBvabWRicSwELXyJLWc7uqE', sort_order: 10 }
+    ];
+
+    // ── State ─────────────────────────────────────────────────────
+    let services = [];
+    let categories = [];
+    let editingId = null;
+    let priceRowCount = 0;
+
+    // ── Supabase Helpers — Services ───────────────────────────────
+    async function dbFetch() {
+        const { data, error } = await sb.from('services').select('*').order('sort_order');
+        if (error) throw error;
+        return data || [];
+    }
+
+    async function dbUpsert(row) {
+        const { error } = await sb.from('services').upsert(row, { onConflict: 'id' });
+        if (error) throw error;
+    }
+
+    async function dbDelete(id) {
+        const { error } = await sb.from('services').delete().eq('id', id);
+        if (error) throw error;
+    }
+
+    // ── Supabase Helpers — Categories ─────────────────────────────
+    async function dbFetchCats() {
+        const { data, error } = await sb.from('categories').select('*').order('sort_order');
+        if (error) throw error;
+        return data || [];
+    }
+
+    async function dbUpsertCat(row) {
+        const { error } = await sb.from('categories').upsert(row, { onConflict: 'id' });
+        if (error) throw error;
+    }
+
+    async function dbDeleteCat(id) {
+        const { error } = await sb.from('categories').delete().eq('id', id);
+        if (error) throw error;
+    }
+
+    // ── Default Categories ────────────────────────────────────────
+    const CAT_DEFAULTS = [
+        { id: 'c1', name: 'Massage',    sort_order: 1 },
+        { id: 'c2', name: 'Facial',     sort_order: 2 },
+        { id: 'c3', name: 'Wellness',   sort_order: 3 },
+        { id: 'c4', name: 'Stretching', sort_order: 4 },
+        { id: 'c5', name: 'Prenatal',   sort_order: 5 }
+    ];
+
+    // ── Load All ──────────────────────────────────────────────────
+    async function loadAndRender() {
+        document.getElementById('list-loading').style.display = 'flex';
+        try {
+            services = await dbFetch();
+            if (services.length === 0) {
+                for (const d of DEFAULTS) { await dbUpsert(d); }
+                services = await dbFetch();
+            }
+        } catch (e) {
+            console.error('Services load error:', e);
+            showError('No se pudo conectar con Supabase. Verifica la tabla "services".');
+        }
+        try {
+            categories = await dbFetchCats();
+            if (categories.length === 0) {
+                for (const c of CAT_DEFAULTS) { await dbUpsertCat(c); }
+                categories = await dbFetchCats();
+            }
+        } catch (e) {
+            console.error('Categories load error:', e);
+        }
+        document.getElementById('list-loading').style.display = 'none';
+        renderList();
+        renderCatList();
+        try {
+            schedule = await dbFetchSched();
+        } catch (e) {
+            console.error('Schedule load error:', e);
+        }
+        renderScheduleList();
+    }
+
+    // ── Render Services List ──────────────────────────────────────
+    function renderList() {
+        const list = document.getElementById('services-list');
+        const count = document.getElementById('svc-count');
+        count.textContent = services.length + ' servicio' + (services.length !== 1 ? 's' : '');
+
+        if (services.length === 0) {
+            list.innerHTML = '<div class="admin-empty-state">No hay servicios. Añade el primero.</div>';
+            return;
+        }
+
+        list.innerHTML = services.map(function (s) {
+            var thumb = s.img ? 'background-image:url(\'' + s.img + '\')' : '';
+            var isEditing = editingId === s.id;
+            var prices = (s.prices || []).map(function (p) {
+                return '<span class="admin-svc-price-tag">' + p.dur + ' · $' + p.p + '</span>';
+            }).join('');
+            return '<div class="admin-svc-item' + (isEditing ? ' admin-svc-item-selected' : '') + '" id="svc-item-' + s.id + '">' +
+                '<div class="admin-svc-item-thumb" style="' + thumb + '"></div>' +
+                '<div class="admin-svc-item-info">' +
+                    '<span class="admin-svc-item-cat">' + s.cat + '</span>' +
+                    '<p class="admin-svc-item-name">' + s.name + '</p>' +
+                    '<div class="admin-svc-item-prices">' + prices + '</div>' +
+                '</div>' +
+                '<div class="admin-svc-item-actions">' +
+                    '<button onclick="editService(\'' + s.id + '\')" class="admin-svc-edit-btn" title="Editar"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>' +
+                    '<button onclick="deleteService(\'' + s.id + '\')" class="admin-svc-delete-btn" title="Eliminar"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    // ── Render Categories List ────────────────────────────────────
+    function renderCatList() {
+        var list = document.getElementById('cats-list');
+        var count = document.getElementById('cat-count');
+        count.textContent = categories.length + ' categoría' + (categories.length !== 1 ? 's' : '');
+        if (categories.length === 0) {
+            list.innerHTML = '<div class="admin-empty-state">No hay categorías.</div>';
+            return;
+        }
+        list.innerHTML = categories.map(function (c, idx) {
+            return '<div class="admin-cat-item" id="cat-item-' + c.id + '">' +
+                '<p class="admin-cat-item-name">' + c.name + '</p>' +
+                '<div class="admin-cat-item-actions">' +
+                    '<button onclick="moveCat(\'' + c.id + '\',-1)" class="admin-cat-move-btn" title="Subir"' + (idx === 0 ? ' disabled style="opacity:0.3"' : '') + '><span class="material-symbols-outlined" style="font-size:14px">arrow_upward</span></button>' +
+                    '<button onclick="moveCat(\'' + c.id + '\',1)" class="admin-cat-move-btn" title="Bajar"' + (idx === categories.length - 1 ? ' disabled style="opacity:0.3"' : '') + '><span class="material-symbols-outlined" style="font-size:14px">arrow_downward</span></button>' +
+                    '<button onclick="editCat(\'' + c.id + '\')" class="admin-cat-edit-btn" title="Renombrar"><span class="material-symbols-outlined" style="font-size:14px">edit</span></button>' +
+                    '<button onclick="deleteCat(\'' + c.id + '\')" class="admin-cat-delete-btn" title="Eliminar"><span class="material-symbols-outlined" style="font-size:14px">delete</span></button>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+
+        // Also update the category select in the service form
+        var sel = document.getElementById('inp-svc-cat');
+        if (sel) {
+            var current = sel.value;
+            sel.innerHTML = categories.map(function (c) {
+                return '<option value="' + c.name + '"' + (c.name === current ? ' selected' : '') + '>' + c.name + '</option>';
+            }).join('');
+        }
+    }
+
+    // ── Add Category ──────────────────────────────────────────────
+    async function addCategory() {
+        var inp = document.getElementById('inp-new-cat');
+        var name = inp.value.trim();
+        if (!name) return;
+        if (categories.some(function (c) { return c.name.toLowerCase() === name.toLowerCase(); })) {
+            alert('Ya existe una categoría con ese nombre.');
+            return;
+        }
+        var maxOrder = categories.reduce(function (m, c) { return Math.max(m, c.sort_order || 0); }, 0);
+        var newCat = { id: 'c' + Date.now(), name: name, sort_order: maxOrder + 1 };
+        try {
+            await dbUpsertCat(newCat);
+            categories = await dbFetchCats();
+            renderCatList();
+            inp.value = '';
+            showToast('Categoría añadida');
+        } catch (e) {
+            alert('Error al añadir categoría: ' + e.message);
+        }
+    }
+
+    // ── Edit Category (inline rename) ─────────────────────────────
+    function editCat(id) {
+        var cat = categories.find(function (c) { return c.id === id; });
+        if (!cat) return;
+        var item = document.getElementById('cat-item-' + id);
+        if (!item) return;
+        item.innerHTML =
+            '<input class="admin-cat-input-inline" id="cat-edit-inp-' + id + '" type="text" value="' + cat.name + '" onkeydown="if(event.key===\'Enter\')saveCat(\'' + id + '\')" />' +
+            '<div class="admin-cat-item-actions">' +
+                '<button onclick="saveCat(\'' + id + '\')" class="admin-cat-save-btn" title="Guardar"><span class="material-symbols-outlined" style="font-size:14px">check</span></button>' +
+                '<button onclick="renderCatList()" class="admin-cat-move-btn" title="Cancelar"><span class="material-symbols-outlined" style="font-size:14px">close</span></button>' +
+            '</div>';
+        document.getElementById('cat-edit-inp-' + id).focus();
+    }
+
+    // ── Save Renamed Category ─────────────────────────────────────
+    async function saveCat(id) {
+        var inp = document.getElementById('cat-edit-inp-' + id);
+        if (!inp) return;
+        var newName = inp.value.trim();
+        if (!newName) return;
+        var cat = categories.find(function (c) { return c.id === id; });
+        if (!cat) return;
+        try {
+            await dbUpsertCat({ id: cat.id, name: newName, sort_order: cat.sort_order });
+            categories = await dbFetchCats();
+            renderCatList();
+            showToast('Categoría actualizada');
+        } catch (e) {
+            alert('Error al guardar: ' + e.message);
+        }
+    }
+
+    // ── Delete Category ───────────────────────────────────────────
+    async function deleteCat(id) {
+        var cat = categories.find(function (c) { return c.id === id; });
+        if (!cat) return;
+        if (!confirm('¿Eliminar la categoría "' + cat.name + '"?\nLos servicios con esta categoría no se eliminarán.')) return;
+        try {
+            await dbDeleteCat(id);
+            categories = await dbFetchCats();
+            renderCatList();
+            showToast('Categoría eliminada');
+        } catch (e) {
+            alert('Error al eliminar: ' + e.message);
+        }
+    }
+
+    // ── Move Category (reorder) ───────────────────────────────────
+    async function moveCat(id, dir) {
+        var idx = categories.findIndex(function (c) { return c.id === id; });
+        var swapIdx = idx + dir;
+        if (swapIdx < 0 || swapIdx >= categories.length) return;
+        var tmp = categories[idx].sort_order;
+        categories[idx].sort_order = categories[swapIdx].sort_order;
+        categories[swapIdx].sort_order = tmp;
+        try {
+            await dbUpsertCat(categories[idx]);
+            await dbUpsertCat(categories[swapIdx]);
+            categories = await dbFetchCats();
+            renderCatList();
+        } catch (e) {
+            alert('Error al reordenar: ' + e.message);
+        }
+    }
+
+    // ── Price Rows ────────────────────────────────────────────────
+    function addPriceRow(dur, price) {
+        priceRowCount++;
+        var idx = priceRowCount;
+        var row = document.createElement('div');
+        row.className = 'admin-price-row';
+        row.id = 'price-row-' + idx;
+        row.innerHTML =
+            '<span class="admin-price-row-label">Dur.</span>' +
+            '<input class="admin-price-row-input" type="text" placeholder="1hr" value="' + (dur || '') + '" id="pr-dur-' + idx + '" />' +
+            '<span class="admin-price-row-label">$</span>' +
+            '<input class="admin-price-row-input" type="number" placeholder="95" value="' + (price || '') + '" id="pr-price-' + idx + '" min="1" />' +
+            '<button type="button" onclick="removePriceRow(' + idx + ')" class="admin-remove-price-btn"><span class="material-symbols-outlined" style="font-size:14px">close</span></button>';
+        document.getElementById('prices-list').appendChild(row);
+    }
+
+    function removePriceRow(idx) {
+        var row = document.getElementById('price-row-' + idx);
+        if (row) row.remove();
+    }
+
+    function collectPrices() {
+        var rows = document.querySelectorAll('#prices-list .admin-price-row');
+        var prices = [];
+        rows.forEach(function (row) {
+            var durEl = row.querySelector('[id^="pr-dur-"]');
+            var priceEl = row.querySelector('[id^="pr-price-"]');
+            if (durEl && priceEl && durEl.value.trim() && priceEl.value) {
+                prices.push({ dur: durEl.value.trim(), p: parseFloat(priceEl.value) });
+            }
+        });
+        return prices;
+    }
+
+    // ── Image Preview ─────────────────────────────────────────────
+    function previewImg(url) {
+        var wrap = document.getElementById('img-preview-wrap');
+        var img = document.getElementById('img-preview');
+        if (url && url.startsWith('http')) {
+            img.src = url;
+            wrap.classList.remove('admin-img-preview-hidden');
+        } else {
+            wrap.classList.add('admin-img-preview-hidden');
+        }
+    }
+
+    // ── Submit Form ───────────────────────────────────────────────
+    async function submitForm() {
+        hideError();
+        var name = document.getElementById('inp-svc-name').value.trim();
+        var cat  = document.getElementById('inp-svc-cat').value;
+        var desc = document.getElementById('inp-svc-desc').value.trim();
+        var img  = document.getElementById('inp-svc-img').value.trim();
+        var prices = collectPrices();
+
+        if (!name) { showError('El nombre del servicio es obligatorio.'); return; }
+        if (prices.length === 0) { showError('Añade al menos una duración con precio.'); return; }
+
+        var id = editingId || ('s' + Date.now());
+        var maxOrder = services.reduce(function (m, s) { return Math.max(m, s.sort_order || 0); }, 0);
+        var existingSvc = services.find(function (s) { return s.id === id; });
+        var row = {
+            id: id,
+            cat: cat,
+            name: name,
+            description: desc,
+            img: img,
+            prices: prices,
+            sort_order: existingSvc ? existingSvc.sort_order : maxOrder + 1
+        };
+
+        setBtnLoading(true);
+        try {
+            await dbUpsert(row);
+            services = await dbFetch();
+            renderList();
+            resetForm();
+            showToast(editingId ? 'Servicio actualizado' : 'Servicio añadido');
+        } catch (e) {
+            console.error('Save error:', e);
+            showError('Error al guardar. Verifica la tabla "services" en Supabase.');
+        }
+        setBtnLoading(false);
+    }
+
+    // ── Edit Service ──────────────────────────────────────────────
+    function editService(id) {
+        var svc = services.find(function (s) { return s.id === id; });
+        if (!svc) return;
+        editingId = id;
+
+        document.getElementById('inp-svc-name').value = svc.name;
+        document.getElementById('inp-svc-cat').value  = svc.cat;
+        document.getElementById('inp-svc-desc').value = svc.description || '';
+        document.getElementById('inp-svc-img').value  = svc.img || '';
+        previewImg(svc.img || '');
+
+        document.getElementById('prices-list').innerHTML = '';
+        priceRowCount = 0;
+        (svc.prices || []).forEach(function (p) { addPriceRow(p.dur, p.p); });
+
+        document.getElementById('form-mode-title').textContent = 'Editar Servicio';
+        document.getElementById('form-mode-badge').textContent = 'Editando';
+        document.getElementById('form-mode-badge').className = 'admin-form-mode-badge admin-form-mode-edit';
+        document.getElementById('btn-save-label').textContent = 'Actualizar Servicio';
+
+        renderList();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ── Delete Service ────────────────────────────────────────────
+    async function deleteService(id) {
+        var svc = services.find(function (s) { return s.id === id; });
+        if (!svc) return;
+        if (!confirm('¿Eliminar "' + svc.name + '"? Esta acción no se puede deshacer.')) return;
+        try {
+            await dbDelete(id);
+            services = await dbFetch();
+            if (editingId === id) resetForm();
+            renderList();
+            showToast('Servicio eliminado');
+        } catch (e) {
+            alert('Error al eliminar: ' + e.message);
+        }
+    }
+
+    // ── Reset Form ────────────────────────────────────────────────
+    function resetForm() {
+        editingId = null;
+        document.getElementById('svc-form').reset();
+        document.getElementById('prices-list').innerHTML = '';
+        priceRowCount = 0;
+        addPriceRow();
+        document.getElementById('img-preview-wrap').classList.add('admin-img-preview-hidden');
+        document.getElementById('form-mode-title').textContent = 'Nuevo Servicio';
+        document.getElementById('form-mode-badge').textContent = 'Nuevo';
+        document.getElementById('form-mode-badge').className = 'admin-form-mode-badge admin-form-mode-new';
+        document.getElementById('btn-save-label').textContent = 'Guardar Servicio';
+        hideError();
+        renderList();
+    }
+
+    // ── Reset to Defaults ─────────────────────────────────────────
+    async function resetToDefaults() {
+        if (!confirm('¿Restaurar los 10 servicios originales? Se borrarán todos los cambios actuales.')) return;
+        try {
+            for (const s of services) { await dbDelete(s.id); }
+            for (const d of DEFAULTS)  { await dbUpsert(d); }
+            services = await dbFetch();
+            resetForm();
+            showToast('Servicios restaurados');
+        } catch (e) {
+            alert('Error al restaurar: ' + e.message);
+        }
+    }
+
+    // ── UI Helpers ────────────────────────────────────────────────
+    function showToast(msg) {
+        var t = document.getElementById('admin-toast');
+        document.getElementById('toast-msg').textContent = msg;
+        t.className = 'admin-toast admin-toast-visible';
+        setTimeout(function () { t.className = 'admin-toast admin-toast-hidden'; }, 2500);
+    }
+
+    function showError(msg) {
+        var el = document.getElementById('form-error');
+        el.textContent = msg;
+        el.className = 'admin-form-error';
+    }
+
+    function hideError() {
+        document.getElementById('form-error').className = 'admin-form-error admin-form-error-hidden';
+    }
+
+    function setBtnLoading(loading) {
+        var btn = document.querySelector('.admin-btn-save');
+        btn.disabled = loading;
+        document.getElementById('btn-save-label').textContent = loading ? 'Guardando...' : (editingId ? 'Actualizar Servicio' : 'Guardar Servicio');
+    }
+
+    // ── Schedule Time Options ──────────────────────────────────────
+    // Generates all 15-min slots from startH (0-23) through endH (0-23) inclusive
+    function buildTimeList(startH, endH) {
+        var result = [];
+        for (var h = startH; h <= endH; h++) {
+            var period = h < 12 ? 'AM' : 'PM';
+            var hour   = h === 0 ? 12 : (h > 12 ? h - 12 : h);
+            for (var mi = 0; mi < 60; mi += 15) {
+                result.push(hour + ':' + (mi < 10 ? '0' + mi : mi) + ' ' + period);
+            }
+        }
+        return result;
+    }
+    var ALL_TIMES       = buildTimeList(4, 23);  // 4:00 AM → 11:45 PM
+    var MORNING_TIMES   = buildTimeList(4, 11);  // 4:00 AM → 11:45 AM
+    var AFTERNOON_TIMES = buildTimeList(12, 17); // 12:00 PM → 5:45 PM
+    var EVENING_TIMES   = buildTimeList(18, 23); // 6:00 PM → 11:45 PM
+    let schedule = [];
+    let schedEditingDate = null; // tracks which date is being edited
+
+    // ── Supabase Helpers — Schedule ───────────────────────────────
+    async function dbFetchSched() {
+        var today = toDateStr(new Date());
+        var { data, error } = await sb.from('available_dates').select('*').gte('date', today).order('date');
+        if (error) throw error;
+        return data || [];
+    }
+
+    async function dbUpsertSched(row) {
+        var { error } = await sb.from('available_dates').upsert(row, { onConflict: 'date' });
+        if (error) throw error;
+    }
+
+    async function dbDeleteSched(date) {
+        var { error } = await sb.from('available_dates').delete().eq('date', date);
+        if (error) throw error;
+    }
+
+    function toDateStr(d) {
+        var y = d.getFullYear();
+        var m = String(d.getMonth() + 1).padStart(2, '0');
+        var dd = String(d.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + dd;
+    }
+
+    // ── Render Times Checkboxes ───────────────────────────────────
+    function renderSchedTimesGrid(selectedTimes) {
+        var grid = document.getElementById('sched-times-grid');
+        if (!grid) return;
+        grid.innerHTML = ALL_TIMES.map(function (t) {
+            var checked = selectedTimes && selectedTimes.indexOf(t) !== -1 ? 'checked' : '';
+            return '<label class="admin-sched-time-check">' +
+                '<input type="checkbox" class="admin-sched-time-check-input" value="' + t + '" ' + checked + ' />' +
+                '<span class="admin-sched-time-label">' + t + '</span>' +
+                '</label>';
+        }).join('');
+    }
+
+    function getCheckedTimes() {
+        return Array.from(document.querySelectorAll('#sched-times-grid input:checked')).map(function (el) { return el.value; });
+    }
+
+    // ── Quick Select Helpers ──────────────────────────────────────
+    function schedSetAll(times) {
+        document.querySelectorAll('#sched-times-grid input').forEach(function (el) {
+            el.checked = times.indexOf(el.value) !== -1;
+        });
+    }
+    function schedSelectAll()       { schedSetAll(ALL_TIMES); }
+    function schedSelectNone()      { schedSetAll([]); }
+    function schedSelectMorning()   { schedSetAll(MORNING_TIMES); }
+    function schedSelectAfternoon() { schedSetAll(AFTERNOON_TIMES); }
+    function schedSelectEvening()   { schedSetAll(EVENING_TIMES); }
+
+    // ── Save / Update Schedule Day ───────────────────────────────────
+    async function saveScheduleDay() {
+        var dateVal = document.getElementById('inp-sched-date').value;
+        if (!dateVal) { alert('Selecciona una fecha.'); return; }
+        var times = getCheckedTimes();
+        if (times.length === 0) { alert('Selecciona al menos un horario.'); return; }
+        try {
+            await dbUpsertSched({ date: dateVal, times: times });
+            schedule = await dbFetchSched();
+            renderScheduleList();
+            cancelSchedEdit();
+            showToast(schedEditingDate ? 'Día actualizado' : 'Día guardado');
+            schedEditingDate = null;
+        } catch (e) {
+            alert('Error al guardar día: ' + e.message);
+        }
+    }
+
+    // ── Edit Schedule Day (load into form) ──────────────────────────
+    function editScheduleDay(date) {
+        var entry = schedule.find(function (e) { return e.date === date; });
+        if (!entry) return;
+        schedEditingDate = date;
+
+        // Populate the date input
+        document.getElementById('inp-sched-date').value = date;
+        document.getElementById('inp-sched-date').min = date; // allow the existing date
+
+        // Check the stored times in the grid
+        renderSchedTimesGrid(entry.times || []);
+
+        // Show editing banner inside the form
+        var form = document.querySelector('.admin-sched-form');
+        var existing = document.getElementById('sched-editing-banner');
+        if (!existing) {
+            var banner = document.createElement('div');
+            banner.id = 'sched-editing-banner';
+            banner.className = 'admin-sched-editing-banner';
+            banner.innerHTML =
+                '<span class="material-symbols-outlined" style="font-size:14px">edit_calendar</span>' +
+                'Editando: ' + date +
+                '<button class="admin-sched-editing-banner-cancel" onclick="cancelSchedEdit()">Cancelar</button>';
+            form.insertBefore(banner, form.firstChild);
+        } else {
+            existing.innerHTML =
+                '<span class="material-symbols-outlined" style="font-size:14px">edit_calendar</span>' +
+                'Editando: ' + date +
+                '<button class="admin-sched-editing-banner-cancel" onclick="cancelSchedEdit()">Cancelar</button>';
+        }
+
+        // Update save button label
+        var saveBtn = document.querySelector('.admin-sched-save-btn');
+        if (saveBtn) saveBtn.innerHTML =
+            '<span class="material-symbols-outlined" style="font-size:14px">update</span> Actualizar Día';
+
+        // Scroll form into view
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ── Cancel Schedule Edit ────────────────────────────────────────────
+    function cancelSchedEdit() {
+        schedEditingDate = null;
+        document.getElementById('inp-sched-date').value = '';
+        var today = toDateStr(new Date());
+        document.getElementById('inp-sched-date').min = today;
+        renderSchedTimesGrid([]);
+        var banner = document.getElementById('sched-editing-banner');
+        if (banner) banner.remove();
+        var saveBtn = document.querySelector('.admin-sched-save-btn');
+        if (saveBtn) saveBtn.innerHTML =
+            '<span class="material-symbols-outlined" style="font-size:14px">calendar_add_on</span> Guardar Día';
+    }
+
+    // ── Remove a single time from an existing day ─────────────────────
+    async function removeTimeFromDay(date, time) {
+        var entry = schedule.find(function (e) { return e.date === date; });
+        if (!entry) return;
+        var newTimes = (entry.times || []).filter(function (t) { return t !== time; });
+        if (newTimes.length === 0) {
+            if (!confirm('No quedarán horas en este día. ¿Eliminar el día completo?')) return;
+            try {
+                await dbDeleteSched(date);
+                schedule = await dbFetchSched();
+                if (schedEditingDate === date) cancelSchedEdit();
+                renderScheduleList();
+                showToast('Día eliminado');
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+            return;
+        }
+        try {
+            await dbUpsertSched({ date: date, times: newTimes });
+            schedule = await dbFetchSched();
+            // If this day is currently open in the form, refresh its checkboxes too
+            if (schedEditingDate === date) renderSchedTimesGrid(newTimes);
+            renderScheduleList();
+            showToast('Hora eliminada');
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    }
+
+    // ── Delete Schedule Day ───────────────────────────────────────
+    async function deleteScheduleDay(date) {
+        if (!confirm('¿Eliminar el día ' + date + '?')) return;
+        try {
+            await dbDeleteSched(date);
+            schedule = await dbFetchSched();
+            renderScheduleList();
+            showToast('Día eliminado');
+        } catch (e) {
+            alert('Error al eliminar: ' + e.message);
+        }
+    }
+
+    // ── Render Schedule List ──────────────────────────────────────
+    function renderScheduleList() {
+        var list = document.getElementById('sched-list');
+        var count = document.getElementById('sched-count');
+        if (!list) return;
+        count.textContent = schedule.length + ' día' + (schedule.length !== 1 ? 's' : '');
+        if (schedule.length === 0) {
+            list.innerHTML = '<div class="admin-sched-empty">No hay días configurados</div>';
+            return;
+        }
+        var DAY_NAMES_ES = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+        var MONTH_NAMES_ES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+        list.innerHTML = schedule.map(function (entry) {
+            var d = new Date(entry.date + 'T12:00:00');
+            var label = DAY_NAMES_ES[d.getDay()] + ' ' + d.getDate() + ' ' + MONTH_NAMES_ES[d.getMonth()] + ' ' + d.getFullYear();
+            var isEditing = schedEditingDate === entry.date;
+            var badges = (entry.times || []).map(function (t) {
+                var safeDate = entry.date.replace(/'/g, "\\'");
+                var safeTime = t.replace(/'/g, "\\'");
+                return '<span class="admin-sched-day-time-badge">' + t +
+                    '<button class="admin-sched-badge-remove" onclick="removeTimeFromDay(\'' + safeDate + '\',\'' + safeTime + '\')" title="Quitar hora" aria-label="Quitar ' + t + '">&times;</button>' +
+                    '</span>';
+            }).join('');
+            return '<div class="admin-sched-day-item' + (isEditing ? ' admin-sched-day-item-editing' : '') + '">' +
+                '<div class="admin-sched-day-info">' +
+                    '<p class="admin-sched-day-date">' + label + '</p>' +
+                    '<div class="admin-sched-day-times">' + badges + '</div>' +
+                '</div>' +
+                '<div class="admin-sched-day-actions">' +
+                    '<button onclick="editScheduleDay(\'' + entry.date + '\')" class="admin-sched-day-edit" title="Editar día">' +
+                        '<span class="material-symbols-outlined" style="font-size:14px">edit</span>' +
+                    '</button>' +
+                    '<button onclick="deleteScheduleDay(\'' + entry.date + '\')" class="admin-sched-day-delete" title="Eliminar día">' +
+                        '<span class="material-symbols-outlined" style="font-size:14px">delete</span>' +
+                    '</button>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    // ── Init ──────────────────────────────────────────────────────
+    (function () {
+        addPriceRow();
+        renderSchedTimesGrid([]);
+        // Set min date to today
+        var today = toDateStr(new Date());
+        var dateInp = document.getElementById('inp-sched-date');
+        if (dateInp) dateInp.min = today;
+        loadAndRender();
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,1426 @@
+/* ============================================================
+   booking_admin.css — Serenity Admin
+   Each class is separated so Pinegrow can edit them individually
+   Mobile-first: base = mobile, @media >= 768px = desktop
+   ============================================================ */
+
+/* ── Body ──────────────────────────────────────────────────── */
+.admin-body {
+    background-color: #e8d5b0;
+    background-image: linear-gradient(rgba(232, 210, 170, 0.72), rgba(220, 195, 148, 0.78)),
+        url('1-sere-web/hero-top-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: #3b2717;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── App Wrapper ───────────────────────────────────────────── */
+.admin-app-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: rgba(255, 248, 235, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(59, 39, 23, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    gap: 1rem;
+}
+
+.admin-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    flex-shrink: 0;
+}
+
+.admin-header-icon {
+    color: #eebd2b;
+    font-size: 22px;
+}
+
+.admin-header-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #3b2717;
+    letter-spacing: 0.05em;
+}
+
+.admin-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.admin-badge {
+    font-size: 9px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background: rgba(238, 189, 43, 0.15);
+    color: #eebd2b;
+    border: 1px solid rgba(238, 189, 43, 0.3);
+}
+
+.admin-preview-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(59, 39, 23, 0.45);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.admin-preview-link:hover {
+    color: #3b2717;
+}
+
+.admin-preview-link-icon {
+    font-size: 14px;
+}
+
+/* ── Main Layout (Mobile First: 1 col) ─────────────────────── */
+.admin-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.25rem 1rem;
+    flex: 1;
+}
+
+/* ── Form Panel ────────────────────────────────────────────── */
+.admin-form-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.admin-form-card {
+    background: rgba(255, 248, 235, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(100, 70, 20, 0.1);
+}
+
+.admin-form-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    gap: 0.5rem;
+}
+
+.admin-form-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: #3b2717;
+    margin: 0;
+}
+
+.admin-form-mode-badge {
+    font-size: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    flex-shrink: 0;
+}
+
+.admin-form-mode-new {
+    background: rgba(238, 189, 43, 0.15);
+    color: #eebd2b;
+    border: 1px solid rgba(238, 189, 43, 0.3);
+}
+
+.admin-form-mode-edit {
+    background: rgba(99, 179, 237, 0.15);
+    color: #63b3ed;
+    border: 1px solid rgba(99, 179, 237, 0.3);
+}
+
+.admin-form-divider {
+    height: 1px;
+    background: linear-gradient(to right, rgba(238, 189, 43, 0.4), transparent);
+    margin-bottom: 1.25rem;
+}
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.125rem;
+}
+
+/* ── Field Group ───────────────────────────────────────────── */
+.admin-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.admin-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(59, 39, 23, 0.5);
+    margin-left: 0.125rem;
+}
+
+.admin-label-optional {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: rgba(59, 39, 23, 0.3);
+    font-size: 10px;
+}
+
+.admin-input-wrap {
+    position: relative;
+}
+
+.admin-input-icon {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(59, 39, 23, 0.3);
+    font-size: 18px;
+    pointer-events: none;
+}
+
+/* ── Inputs ────────────────────────────────────────────────── */
+.admin-input {
+    width: 100%;
+    padding: 0.75rem 0.875rem 0.75rem 2.75rem;
+    border-radius: 0.625rem;
+    border: 1px solid rgba(59, 39, 23, 0.15);
+    background: rgba(255, 255, 255, 0.5);
+    color: #3b2717;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.admin-input:focus {
+    border-color: rgba(184, 140, 20, 0.5);
+    box-shadow: 0 0 0 3px rgba(184, 140, 20, 0.1);
+}
+
+.admin-input::placeholder {
+    color: rgba(59, 39, 23, 0.3);
+}
+
+.admin-select {
+    width: 100%;
+    padding: 0.75rem 0.875rem 0.75rem 2.75rem;
+    border-radius: 0.625rem;
+    border: 1px solid rgba(59, 39, 23, 0.15);
+    background: rgba(255, 255, 255, 0.5);
+    color: #3b2717;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s ease;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+}
+
+.admin-select:focus {
+    border-color: rgba(184, 140, 20, 0.5);
+}
+
+.admin-textarea {
+    width: 100%;
+    padding: 0.75rem 0.875rem;
+    border-radius: 0.625rem;
+    border: 1px solid rgba(59, 39, 23, 0.15);
+    background: rgba(255, 255, 255, 0.5);
+    color: #3b2717;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.admin-textarea:focus {
+    border-color: rgba(184, 140, 20, 0.5);
+}
+
+.admin-textarea::placeholder {
+    color: rgba(59, 39, 23, 0.3);
+}
+
+/* ── Image Preview ─────────────────────────────────────────── */
+.admin-img-preview-wrap {
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-img-preview-hidden {
+    display: none;
+}
+
+.admin-img-preview {
+    width: 100%;
+    height: 8rem;
+    object-fit: cover;
+    display: block;
+}
+
+/* ── Prices List ───────────────────────────────────────────── */
+.admin-prices-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.admin-price-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.admin-price-row-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(59, 39, 23, 0.4);
+    white-space: nowrap;
+}
+
+.admin-price-row-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(59, 39, 23, 0.15);
+    background: rgba(255, 255, 255, 0.5);
+    color: #3b2717;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.admin-price-row-input:focus {
+    border-color: rgba(184, 140, 20, 0.4);
+}
+
+.admin-price-row-input::placeholder {
+    color: rgba(59, 39, 23, 0.3);
+}
+
+.admin-remove-price-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.1);
+    color: rgba(239, 68, 68, 0.6);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.admin-remove-price-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.admin-add-price-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(238, 189, 43, 0.7);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem 0;
+    transition: color 0.2s ease;
+}
+
+.admin-add-price-btn:hover {
+    color: #eebd2b;
+}
+
+.admin-add-price-icon {
+    font-size: 16px;
+}
+
+/* ── Form Error ────────────────────────────────────────────── */
+.admin-form-error {
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    font-size: 12px;
+}
+
+.admin-form-error-hidden {
+    display: none;
+}
+
+/* ── Form Actions ──────────────────────────────────────────── */
+.admin-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+}
+
+.admin-btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    background: #eebd2b;
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 20px -8px rgba(238, 189, 43, 0.5);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-btn-save:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 25px -8px rgba(238, 189, 43, 0.6);
+}
+
+.admin-btn-save:active {
+    transform: scale(0.97);
+}
+
+.admin-btn-cancel {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(59, 39, 23, 0.4);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.2s ease;
+}
+
+.admin-btn-cancel:hover {
+    color: #3b2717;
+}
+
+/* ── SQL Hint ──────────────────────────────────────────────── */
+.admin-sql-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.625rem;
+    background: rgba(184, 140, 20, 0.08);
+    border: 1px solid rgba(184, 140, 20, 0.2);
+}
+
+.admin-sql-hint-icon {
+    color: rgba(184, 140, 20, 0.6);
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.admin-sql-hint-text {
+    font-size: 11px;
+    color: rgba(59, 39, 23, 0.5);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ── Services Panel ────────────────────────────────────────── */
+.admin-services-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.admin-services-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.admin-services-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.admin-services-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #3b2717;
+    margin: 0;
+}
+
+.admin-services-count {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(59, 39, 23, 0.4);
+    background: rgba(59, 39, 23, 0.06);
+    border: 1px solid rgba(59, 39, 23, 0.12);
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+}
+
+.admin-btn-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(59, 39, 23, 0.35);
+    background: none;
+    border: 1px solid rgba(59, 39, 23, 0.12);
+    border-radius: 9999px;
+    padding: 0.35rem 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-btn-reset:hover {
+    color: #3b2717;
+    border-color: rgba(59, 39, 23, 0.3);
+}
+
+.admin-btn-reset-icon {
+    font-size: 14px;
+}
+
+.admin-btn-reset-label {
+    display: none;
+}
+
+/* ── Services List ─────────────────────────────────────────── */
+.admin-services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* ── Loading State ─────────────────────────────────────────── */
+.admin-list-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    color: rgba(59, 39, 23, 0.35);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+}
+
+.admin-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(238, 189, 43, 0.2);
+    border-top-color: #eebd2b;
+    border-radius: 50%;
+    animation: admin-spin 0.9s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes admin-spin {
+    to { transform: rotate(360deg); }
+}
+
+.admin-list-loading-text {
+    font-size: 11px;
+}
+
+/* ── Service Item Card ─────────────────────────────────────── */
+.admin-svc-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.875rem;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.admin-svc-item:hover {
+    border-color: rgba(184, 140, 20, 0.3);
+    background: rgba(255, 255, 255, 0.55);
+}
+
+.admin-svc-item-selected {
+    border-color: rgba(99, 150, 200, 0.5);
+    background: rgba(99, 150, 200, 0.08);
+    box-shadow: 0 0 0 1px rgba(99, 150, 200, 0.2);
+}
+
+.admin-svc-item-thumb {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(59, 39, 23, 0.08);
+    flex-shrink: 0;
+    border: 1px solid rgba(59, 39, 23, 0.1);
+}
+
+.admin-svc-item-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.admin-svc-item-cat {
+    font-size: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(238, 189, 43, 0.6);
+}
+
+.admin-svc-item-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3b2717;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-svc-item-prices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.15rem;
+}
+
+.admin-svc-price-tag {
+    font-size: 9px;
+    font-weight: 700;
+    color: rgba(59, 39, 23, 0.45);
+    background: rgba(59, 39, 23, 0.06);
+    border: 1px solid rgba(59, 39, 23, 0.1);
+    border-radius: 9999px;
+    padding: 0.1rem 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.admin-svc-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex-shrink: 0;
+}
+
+.admin-svc-edit-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.5rem;
+    background: rgba(59, 39, 23, 0.06);
+    border: 1px solid rgba(59, 39, 23, 0.1);
+    color: rgba(59, 39, 23, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-svc-edit-btn:hover {
+    background: rgba(184, 140, 20, 0.15);
+    border-color: rgba(184, 140, 20, 0.4);
+    color: #a07010;
+}
+
+.admin-svc-delete-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.5rem;
+    background: rgba(59, 39, 23, 0.06);
+    border: 1px solid rgba(59, 39, 23, 0.1);
+    color: rgba(59, 39, 23, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-svc-delete-btn:hover {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+}
+
+/* ── Toast ─────────────────────────────────────────────────── */
+.admin-toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 9999px;
+    background: rgba(59, 39, 23, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(238, 189, 43, 0.3);
+    color: #f7eee2;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    z-index: 100;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.admin-toast-icon {
+    color: #eebd2b;
+    font-size: 18px;
+}
+
+.admin-toast-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(1rem);
+}
+
+.admin-toast-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ── Empty State ───────────────────────────────────────────── */
+.admin-empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: rgba(59, 39, 23, 0.3);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    border: 1px dashed rgba(59, 39, 23, 0.15);
+    border-radius: 0.875rem;
+}
+
+/* ── Responsive — Desktop ≥ 768px ──────────────────────────── */
+@media (min-width: 768px) {
+    .admin-main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        padding: 2rem;
+        align-items: start;
+    }
+
+    .admin-btn-reset-label {
+        display: inline;
+    }
+}
+
+/* ── Categories Panel ──────────────────────────────────────── */
+.admin-cats-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    margin-top: 1.5rem;
+}
+
+.admin-cats-card {
+    background: rgba(255, 248, 235, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+    box-shadow: 0 8px 32px rgba(100, 70, 20, 0.1);
+}
+
+.admin-cats-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    gap: 0.5rem;
+}
+
+.admin-cats-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #3b2717;
+    margin: 0;
+}
+
+.admin-cats-divider {
+    height: 1px;
+    background: linear-gradient(to right, rgba(238, 189, 43, 0.3), transparent);
+    margin-bottom: 1rem;
+}
+
+.admin-cats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+/* ── Category Item ─────────────────────────────────────────── */
+.admin-cat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.625rem;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    transition: border-color 0.2s ease;
+}
+
+.admin-cat-item:hover {
+    border-color: rgba(184, 140, 20, 0.3);
+}
+
+.admin-cat-item-name {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: #3b2717;
+    margin: 0;
+}
+
+.admin-cat-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+.admin-cat-move-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 0.375rem;
+    background: rgba(59, 39, 23, 0.05);
+    border: 1px solid rgba(59, 39, 23, 0.1);
+    color: rgba(59, 39, 23, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-cat-move-btn:hover {
+    background: rgba(59, 39, 23, 0.1);
+    color: #3b2717;
+}
+
+.admin-cat-edit-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 0.375rem;
+    background: rgba(59, 39, 23, 0.05);
+    border: 1px solid rgba(59, 39, 23, 0.1);
+    color: rgba(59, 39, 23, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-cat-edit-btn:hover {
+    background: rgba(184, 140, 20, 0.15);
+    border-color: rgba(184, 140, 20, 0.3);
+    color: #a07010;
+}
+
+.admin-cat-delete-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 0.375rem;
+    background: rgba(59, 39, 23, 0.05);
+    border: 1px solid rgba(59, 39, 23, 0.1);
+    color: rgba(59, 39, 23, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-cat-delete-btn:hover {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+}
+
+/* ── Category Inline Edit ──────────────────────────────────── */
+.admin-cat-input-inline {
+    flex: 1;
+    padding: 0.35rem 0.625rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgba(184, 140, 20, 0.4);
+    background: rgba(255, 255, 255, 0.6);
+    color: #3b2717;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+}
+
+.admin-cat-input-inline:focus {
+    border-color: rgba(184, 140, 20, 0.7);
+    box-shadow: 0 0 0 2px rgba(184, 140, 20, 0.1);
+}
+
+.admin-cat-save-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 0.375rem;
+    background: rgba(238, 189, 43, 0.2);
+    border: 1px solid rgba(238, 189, 43, 0.4);
+    color: #eebd2b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-cat-save-btn:hover {
+    background: rgba(238, 189, 43, 0.35);
+}
+
+/* ── Add Category Row ──────────────────────────────────────── */
+.admin-add-cat-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.625rem;
+    padding-top: 0.625rem;
+    border-top: 1px solid rgba(59, 39, 23, 0.08);
+}
+
+.admin-add-cat-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(59, 39, 23, 0.15);
+    background: rgba(255, 255, 255, 0.5);
+    color: #3b2717;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.admin-add-cat-input:focus {
+    border-color: rgba(184, 140, 20, 0.4);
+}
+
+.admin-add-cat-input::placeholder {
+    color: rgba(59, 39, 23, 0.3);
+}
+
+.admin-add-cat-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 9999px;
+    background: rgba(238, 189, 43, 0.15);
+    border: 1px solid rgba(238, 189, 43, 0.3);
+    color: #eebd2b;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.admin-add-cat-btn:hover {
+    background: rgba(238, 189, 43, 0.25);
+    border-color: rgba(238, 189, 43, 0.5);
+}
+
+/* ── Responsive — Large Desktop ≥ 1024px ──────────────────── */
+@media (min-width: 1024px) {
+    .admin-main {
+        grid-template-columns: 480px 1fr;
+        max-width: 1280px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .admin-header {
+        padding: 1rem 2rem;
+    }
+}
+
+/* ── Schedule Panel ────────────────────────────────────────── */
+.admin-sched-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    margin-top: 1.5rem;
+}
+
+.admin-sched-card {
+    background: rgba(255, 248, 235, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+    box-shadow: 0 8px 32px rgba(100, 70, 20, 0.1);
+}
+
+.admin-sched-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    gap: 0.5rem;
+}
+
+.admin-sched-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #3b2717;
+    margin: 0;
+}
+
+.admin-sched-divider {
+    height: 1px;
+    background: linear-gradient(to right, rgba(238, 189, 43, 0.3), transparent);
+    margin-bottom: 1rem;
+}
+
+/* ── Schedule Form ─────────────────────────────────────────── */
+.admin-sched-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(59, 39, 23, 0.08);
+    margin-bottom: 1rem;
+}
+
+.admin-sched-form-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.admin-sched-form-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(59, 39, 23, 0.45);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.admin-sched-date-input {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(59, 39, 23, 0.15);
+    background: rgba(255, 255, 255, 0.5);
+    color: #3b2717;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+    color-scheme: light;
+}
+
+.admin-sched-date-input:focus {
+    border-color: rgba(184, 140, 20, 0.5);
+    box-shadow: 0 0 0 2px rgba(184, 140, 20, 0.1);
+}
+
+/* ── Times Grid ────────────────────────────────────────────── */
+.admin-sched-times-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(59, 39, 23, 0.45);
+    margin-bottom: 0.5rem;
+}
+
+.admin-sched-times-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.3rem;
+}
+
+.admin-sched-time-check {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    padding: 0.35rem 0.4rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgba(59, 39, 23, 0.12);
+    background: rgba(255, 255, 255, 0.35);
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.admin-sched-time-check:hover {
+    border-color: rgba(184, 140, 20, 0.3);
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.admin-sched-time-check-input {
+    width: 13px;
+    height: 13px;
+    accent-color: #a07010;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.admin-sched-time-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(59, 39, 23, 0.55);
+    white-space: nowrap;
+    transition: color 0.15s ease;
+}
+
+.admin-sched-time-check:has(input:checked) {
+    border-color: rgba(184, 140, 20, 0.4);
+    background: rgba(184, 140, 20, 0.12);
+}
+
+.admin-sched-time-check:has(input:checked) .admin-sched-time-label {
+    color: #8a6000;
+}
+
+/* ── Select All / None ─────────────────────────────────────── */
+.admin-sched-quick-btns {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.admin-sched-quick-btn {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(59, 39, 23, 0.4);
+    background: none;
+    border: 1px solid rgba(59, 39, 23, 0.12);
+    border-radius: 9999px;
+    padding: 0.2rem 0.6rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.admin-sched-quick-btn:hover {
+    color: #3b2717;
+    border-color: rgba(59, 39, 23, 0.3);
+}
+
+/* ── Save Schedule Day Button ──────────────────────────────── */
+.admin-sched-save-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 9999px;
+    background: #eebd2b;
+    color: #000;
+    font-size: 9px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 16px -6px rgba(238, 189, 43, 0.5);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    align-self: flex-start;
+}
+
+.admin-sched-save-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px -6px rgba(238, 189, 43, 0.6);
+}
+
+/* ── Configured Days List ──────────────────────────────────── */
+.admin-sched-list-title {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(59, 39, 23, 0.4);
+    margin-bottom: 0.5rem;
+}
+
+.admin-sched-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.admin-sched-day-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.625rem;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    transition: border-color 0.2s ease;
+}
+
+.admin-sched-day-item:hover {
+    border-color: rgba(184, 140, 20, 0.3);
+}
+
+.admin-sched-day-item-editing {
+    border-color: rgba(184, 140, 20, 0.55);
+    background: rgba(238, 189, 43, 0.07);
+    box-shadow: 0 0 0 1px rgba(184, 140, 20, 0.2);
+}
+
+.admin-sched-day-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    min-width: 0;
+}
+
+.admin-sched-day-date {
+    font-size: 12px;
+    font-weight: 700;
+    color: #3b2717;
+    margin: 0;
+    letter-spacing: 0.02em;
+}
+
+.admin-sched-day-times {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.admin-sched-day-time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(238, 189, 43, 0.8);
+    background: rgba(238, 189, 43, 0.1);
+    border: 1px solid rgba(238, 189, 43, 0.2);
+    border-radius: 9999px;
+    padding: 0.15rem 0.4rem 0.15rem 0.5rem;
+}
+
+/* ── Day Actions Wrapper ───────────────────────────────────── */
+.admin-sched-day-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    flex-shrink: 0;
+}
+
+/* ── Edit Day Button ───────────────────────────────────────── */
+.admin-sched-day-edit {
+    width: 30px;
+    height: 30px;
+    border-radius: 0.375rem;
+    background: rgba(59, 39, 23, 0.05);
+    border: 1px solid rgba(59, 39, 23, 0.1);
+    color: rgba(59, 39, 23, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.admin-sched-day-edit:hover {
+    background: rgba(184, 140, 20, 0.15);
+    border-color: rgba(184, 140, 20, 0.4);
+    color: #a07010;
+}
+
+/* ── Delete Day Button ─────────────────────────────────────── */
+.admin-sched-day-delete {
+    width: 30px;
+    height: 30px;
+    border-radius: 0.375rem;
+    background: rgba(59, 39, 23, 0.05);
+    border: 1px solid rgba(59, 39, 23, 0.1);
+    color: rgba(59, 39, 23, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.admin-sched-day-delete:hover {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+}
+
+/* ── Badge Remove (×) Button ───────────────────────────────── */
+.admin-sched-badge-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: rgba(238, 189, 43, 0.2);
+    border: none;
+    color: rgba(180, 120, 0, 0.7);
+    font-size: 9px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.15s ease, color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.admin-sched-badge-remove:hover {
+    background: rgba(239, 68, 68, 0.25);
+    color: #dc2626;
+}
+
+/* ── Editing Day State (schedule form) ─────────────────────── */
+.admin-sched-editing-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(184, 140, 20, 0.1);
+    border: 1px solid rgba(184, 140, 20, 0.25);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #8a6000;
+}
+
+.admin-sched-editing-banner-cancel {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: rgba(138, 96, 0, 0.55);
+    cursor: pointer;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0;
+    transition: color 0.15s ease;
+}
+
+.admin-sched-editing-banner-cancel:hover {
+    color: #8a6000;
+}
+
+.admin-sched-empty {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    color: rgba(59, 39, 23, 0.3);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    border: 1px dashed rgba(59, 39, 23, 0.12);
+    border-radius: 0.625rem;
+}

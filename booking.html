@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+        <title>Serenity Massage - Sanctuary Booking</title>
+        <!-- Tailwind CSS (compiled locally — editable in Pinegrow) -->
+        <link rel="stylesheet" href="tailwind.output.css"/>
+        <!-- Google Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Montserrat:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        <!-- Supabase JS SDK -->
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+        <!-- tailwind.config.js handles the theme — no inline config needed -->
+        <!-- External stylesheet — editable individually in Pinegrow -->
+        <link rel="stylesheet" href="booking.css"/>
+    </head>
+    <body class="font-sans antialiased">
+        <div id="booking-app" class="relative flex min-h-screen w-full flex-col">
+            <main class="flex-1 flex flex-col w-full max-w-4xl mx-auto px-6 py-8 md:py-16">
+                <!-- STEP 1: TIME SELECTION -->
+                <section id="step-1" class="step-section step-active w-full">
+                    <!-- Progress Stepper -->
+                    <div class="flex flex-col gap-4 mb-12 max-w-4xl mx-auto">
+                        <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.2em] font-bold text-white/40">
+                            <div class="flex items-center gap-2 text-primary">
+                                <span class="material-symbols-outlined text-sm" style="color: #000000; font-size: 22px;">schedule</span>
+                                <span style="color: #000000; font-size: 13px; font-weight: 700;">Time Selection</span>
+                            </div>
+                            <span style="font-size: 10px;">Step 1 of 4</span>
+                        </div>
+                        <div class="h-[1px] w-full bg-white/10 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary w-1/4 transition-all duration-500"></div>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2 mt-2">
+                            <span class="text-[9px] uppercase tracking-widest font-bold text-primary">01 Time</span>
+                            <span class="text-[9px] uppercase tracking-widest font-bold text-white/20">02 Service</span>
+                            <span class="text-[9px] uppercase tracking-widest font-bold text-white/20">03 Details</span>
+                            <span class="text-[9px] uppercase tracking-widest font-bold text-white/20">04 Confirm</span>
+                        </div>
+                    </div>
+                    <div class="glass-panel rounded-3xl p-6 md:p-12 overflow-hidden shadow-2xl">
+                        <div class="flex flex-col items-center text-center mb-8">
+                            <p class="text-xs md:text-[13px] tracking-[0.15em] uppercase text-primary font-bold mb-2">SECURE
+                            YOUR SESSION | CHOOSE A DAY &amp; TIME</p>
+                            <p class="text-[13px] text-white/50 max-w-xl font-normal">Tap a time to book &nbsp;·&nbsp; <span style="color: #4a5967;">Booked</span> = reserved</p>
+                        </div>
+                        <p id="current-month-display" class="text-center text-[10px] font-bold uppercase tracking-[0.25em] text-white/40 mb-6"></p>
+                        <div id="board-container" class="board-scroll-wrapper overflow-x-auto pb-8 custom-scrollbar">
+                            <!-- Dynamic Calendar Inject Here -->
+                            <div class="flex items-center justify-center p-20">
+                                <div class="spinner mr-4"></div>
+                                <span class="text-slate-400 tracking-widest uppercase text-xs font-bold">Discovering
+                                availability...</span>
+                            </div>
+                        </div>
+                        <div id="board-error" class="hidden max-w-md mx-auto mt-4 p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-xs text-center rounded-lg">
+</div>
+                    </div>
+                    <div class="mt-16 flex flex-col items-center gap-8 pb-12">
+</div>
+                </section>
+                <!-- STEP 2: SERVICE SELECTION -->
+                <section id="step-2" class="step-section w-full max-w-5xl mx-auto">
+                    <div class="flex flex-col mb-12 max-w-5xl mx-auto">
+                        <!-- Top Row: Icon/Title & % Complete -->
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-3 text-primary font-bold text-xs uppercase tracking-[0.2em]">
+                                <span class="material-symbols-outlined text-[15px]">spa</span>
+                                <span class="service-selection text-booking-page-title-dom">Service Selection</span>
+                            </div>
+                            <p class="text-primary/70 text-[10px] font-bold tracking-[0.2em] uppercase" style="font-size: 10px;">50% Complete</p>
+                        </div>
+                        <!-- Progress Bar -->
+                        <div class="w-full h-[1px] bg-white/10 mb-6">
+                            <div class="h-full bg-primary transition-all duration-500" style="width: 50%;"></div>
+                        </div>
+                        <!-- Bottom Row: Steps Nav & Back Btn -->
+                        <div class="flex justify-between items-center w-full gap-4">
+                            <div class="steps-nav-scroll text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">
+                                <span class="text-white/60 hover:text-white transition-colors cursor-pointer" onclick="goTo(1)" style="font-size: 13px;">01 Time</span>
+                                <span class="text-primary" style="font-size: 13px;">02 Service</span>
+                                <span style="font-size: 13px;">03 Details</span>
+                                <span style="font-size: 13px;">04 Confirm</span>
+                            </div>
+                            <button onclick="goTo(1)" class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-white transition-colors">
+                                <span class="material-symbols-outlined text-[13px]" style="font-size: 14px; color: #000000;">arrow_back</span>
+                                <span style="font-size: 10px; color: #000000;">Back</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Categories Tabs — rendered dynamically by JS from Supabase -->
+                    <div class="mb-10 overflow-x-auto custom-scrollbar">
+                        <div id="cat-tabs-container" class="flex border-b border-white/5 gap-8 min-w-max">
+                            <!-- Tabs injected by renderCategoryTabs() -->
+                        </div>
+                    </div>
+                    <div id="time-summary-badge" class="flex items-center gap-3 mb-10 px-6 py-4 rounded-xl glass-panel border-primary/20 w-fit">
+                        <span class="material-symbols-outlined text-primary text-xl" style="color: #ffffff;">calendar_today</span>
+                        <span id="selected-time-summary" class="text-sm font-bold text-white tracking-wide"></span>
+                        <button onclick="goTo(1)" class="ml-4 text-xs font-bold text-primary/60 hover:text-primary uppercase tracking-widest underline decoration-primary/20 underline-offset-4">Change</button>
+                    </div>
+                    <div id="svc-grid" class="flex flex-col gap-8">
+                        <!-- ═══════════════════════════════════════════════════════
+                         PINEGROW DESIGN PREVIEW — these cards are replaced at
+                         runtime by renderServices(). Edit classes here to style
+                         all service cards. Each CSS class lives in booking.css.
+                         ═══════════════════════════════════════════════════════ -->
+                        <!-- Card: Default state -->
+                        <div id="pg-svc-card-default" class="svc-card glass-panel">
+                            <div class="svc-card-body">
+                                <div class="svc-meta-row">
+                                    <span class="svc-cat-chip">Massage</span>
+                                </div>
+                                <h3 class="svc-title">Therapeutic Massage</h3>
+                                <p class="svc-desc">Classic full-body relaxation using long, graceful strokes for ultimate peace.</p>
+                                <div class="svc-actions">
+                                    <button class="svc-price-chip">1hr &bull; $95</button>
+                                    <button class="svc-price-chip">1&frac12;hr &bull; $140</button>
+                                    <button class="svc-price-chip">2hr &bull; $180</button>
+                                </div>
+                            </div>
+                            <div class="svc-image" style="background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuD42yGA-WSgIy2fTLOdQQMSRSisc2JoZDQ9HVURZq0VzIV6pSn77Gmrkr8BuGCIygYWbw3UKYQS-VCWYja4CmG63oHQmSEdutKz_SKadRFcTaMHt9TTTSOMos3KEeuDSM8IVEVempyHYM6MmEpfkXLangmhhVxDOUe55KUAX1eHgy9UEtQfDY4UGsR0V-55IGdkkKspuooSn17DinnW_E17Tnm6c3oP5BfKdk8k3pJj0QLmK5Rhmfj9FBvabWRicSwELXyJLWc7uqE')"></div>
+                        </div>
+                        <!-- Card: Selected / active state -->
+                        <div id="pg-svc-card-selected" class="svc-card glass-panel svc-card-selected">
+                            <div class="svc-card-body">
+                                <div class="svc-meta-row">
+                                    <span class="svc-cat-chip">Massage</span>
+                                    <span class="svc-selected-badge"> <span class="material-symbols-outlined" style="font-size:10px">check_circle</span>
+                                    Selected </span>
+                                </div>
+                                <h3 class="svc-title">Swedish Massage</h3>
+                                <p class="svc-desc">Gentle flowing strokes that ease muscle tension and calm the nervous system.</p>
+                                <div class="svc-actions">
+                                    <button class="svc-price-chip">1hr &bull; $95</button>
+                                    <button class="svc-price-chip svc-price-chip-active">1&frac12;hr &bull; $140</button>
+                                    <button class="svc-price-chip">2hr &bull; $180</button>
+                                    <button class="svc-continue-btn">
+                                        Continue
+                                        <span class="material-symbols-outlined" style="font-size:11px">arrow_forward</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="svc-image svc-image-selected" style="background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuD42yGA-WSgIy2fTLOdQQMSRSisc2JoZDQ9HVURZq0VzIV6pSn77Gmrkr8BuGCIygYWbw3UKYQS-VCWYja4CmG63oHQmSEdutKz_SKadRFcTaMHt9TTTSOMos3KEeuDSM8IVEVempyHYM6MmEpfkXLangmhhVxDOUe55KUAX1eHgy9UEtQfDY4UGsR0V-55IGdkkKspuooSn17DinnW_E17Tnm6c3oP5BfKdk8k3pJj0QLmK5Rhmfj9FBvabWRicSwELXyJLWc7uqE')"></div>
+                        </div>
+                        <!-- ═══════════════════════════════════════════════════════
+                         END PINEGROW PREVIEW
+                         ═══════════════════════════════════════════════════════ -->
+                    </div>
+                    <div class="mt-16 flex flex-col md:flex-row items-center justify-between border-t border-white/10 pt-10 mb-24 gap-8">
+                        <button onclick="goTo(1)" class="flex items-center gap-3 text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-sm" style="font-size: 16px; color: #000000;">arrow_back</span>
+                            <span style="font-size: 10px; color: #000000;">Back to Time</span>
+                        </button>
+                        <button id="btn-to-step-3" disabled onclick="goTo(3)" class="flex items-center justify-center rounded-full h-14 px-12 bg-primary text-black gap-4 text-xs font-bold uppercase tracking-[0.2em] shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+                            <span>Continue to Details</span>
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>
+                    </div>
+                </section>
+                <!-- STEP 3: CLIENT DETAILS -->
+                <section id="step-3" class="step-section w-full max-w-5xl mx-auto">
+                    <div class="flex flex-col mb-12 max-w-5xl mx-auto">
+                        <!-- Top Row: Icon/Title & % Complete -->
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-3 text-primary font-bold text-xs uppercase tracking-[0.2em]">
+                                <span class="material-symbols-outlined text-[15px]">edit</span>
+                                <span>Client Details</span>
+                            </div>
+                            <p class="text-primary/70 text-[10px] font-bold tracking-[0.2em] uppercase">75% Complete</p>
+                        </div>
+                        <!-- Progress Bar -->
+                        <div class="w-full h-[1px] bg-white/10 mb-6">
+                            <div class="h-full bg-primary transition-all duration-500" style="width: 75%;"></div>
+                        </div>
+                        <!-- Bottom Row: Steps Nav & Back Btn -->
+                        <div class="flex justify-between items-center w-full gap-4">
+                            <div class="steps-nav-scroll text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">
+                                <span class="text-white/60 hover:text-white transition-colors cursor-pointer" onclick="goTo(1)">01 Time</span>
+                                <span class="text-white/60 hover:text-white transition-colors cursor-pointer" onclick="goTo(2)">02 Service</span>
+                                <span class="text-primary">03 Details</span>
+                                <span>04 Confirm</span>
+                            </div>
+                            <button onclick="goTo(2)" class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-white transition-colors">
+                                <span class="material-symbols-outlined text-[13px]">arrow_back</span>
+                                <span>Back</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="glass-panel rounded-3xl p-8 md:p-12 shadow-2xl">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                            <!-- Left Column: Summary -->
+                            <div class="flex flex-col gap-6">
+                                <h1 class="text-white text-3xl font-display leading-tight tracking-tight">Complete Your
+                                Booking</h1>
+                                <div class="h-px w-16 bg-primary/30 mb-2"></div>
+                                <div id="booking-final-summary" class="bg-black/20 rounded-2xl p-6 border border-white/5 space-y-6">
+                                    <!-- Filled by JS -->
+                                </div>
+                                <div class="flex items-center gap-3 text-white/40 text-xs">
+                                    <span class="material-symbols-outlined text-base">lock</span>
+                                    <p>Secure 256-bit encrypted checkout</p>
+                                </div>
+                            </div>
+                            <!-- Right Column: Form -->
+                            <div class="flex flex-col gap-6 bg-white/[0.03] rounded-2xl p-6 md:p-8 border border-white/5">
+                                <form id="user-form" onsubmit="return false;" class="space-y-5">
+                                    <div class="block">
+                                        <label for="inp-name" class="text-slate-300 text-[10px] font-bold uppercase tracking-widest mb-2 block ml-1">Full
+                                            Name
+</label>
+                                        <div class="relative">
+                                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">person</span>
+                                            <input id="inp-name" class="w-full pl-12 pr-4 py-4 rounded-xl border border-white/10 bg-black/20 focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all text-white placeholder-slate-600 outline-none" placeholder="Enter your full name" type="text" required/>
+                                        </div>
+                                    </div>
+                                    <div class="block">
+                                        <label for="inp-email" class="text-slate-300 text-[10px] font-bold uppercase tracking-widest mb-2 block ml-1">Email
+                                            Address
+</label>
+                                        <div class="relative">
+                                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">mail</span>
+                                            <input id="inp-email" class="w-full pl-12 pr-4 py-4 rounded-xl border border-white/10 bg-black/20 focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all text-white placeholder-slate-600 outline-none" placeholder="email@example.com" type="email" required/>
+                                        </div>
+                                    </div>
+                                    <div class="block">
+                                        <label for="inp-phone" class="text-slate-300 text-[10px] font-bold uppercase tracking-widest mb-2 block ml-1">Phone
+                                            Number
+</label>
+                                        <div class="relative">
+                                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl">call</span>
+                                            <input id="inp-phone" class="w-full pl-12 pr-4 py-4 rounded-xl border border-white/10 bg-black/20 focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all text-white placeholder-slate-600 outline-none" placeholder="(555) 000-0000" type="tel" required/>
+                                        </div>
+                                    </div>
+                                    <div class="block">
+                                        <label for="inp-notes" class="text-slate-300 text-[10px] font-bold uppercase tracking-widest mb-2 block ml-1">Special
+                                            Requests
+</label>
+                                        <div class="relative">
+                                            <span class="material-symbols-outlined absolute left-4 top-4 text-slate-500 text-xl">notes</span>
+                                            <textarea id="inp-notes" class="w-full pl-12 pr-4 py-4 rounded-xl border border-white/10 bg-black/20 focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all text-white placeholder-slate-600 outline-none resize-none" placeholder="Allergies, focus areas, or preferences..." rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div id="submit-error" class="hidden p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-lg">
+</div>
+                                    <button id="btn-confirm" onclick="confirmBooking()" class="w-full bg-primary hover:scale-[1.02] transition-transform text-black font-bold py-5 rounded-full shadow-2xl shadow-primary/20 flex items-center justify-center gap-3 mt-4 active:scale-95">
+                                        <span class="tracking-widest uppercase text-xs">Confirm My Session</span>
+                                        <span class="material-symbols-outlined">check_circle</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-12 text-center">
+                        <button onclick="goTo(2)" class="text-slate-500 hover:text-white transition-colors text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 mx-auto">
+                            <span class="material-symbols-outlined text-sm">arrow_back</span>
+                            Back to service selection
+                        </button>
+                    </div>
+                </section>
+                <!-- STEP 4: CONFIRMATION SUCCESS -->
+                <section id="step-4" class="step-section w-full max-w-2xl mx-auto">
+                    <div class="flex flex-col mb-12 max-w-5xl mx-auto">
+                        <!-- Top Row: Icon/Title & % Complete -->
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-3 text-primary font-bold text-xs uppercase tracking-[0.2em]">
+                                <span class="material-symbols-outlined text-[15px]">check_circle</span>
+                                <span>Booking Complete</span>
+                            </div>
+                            <p class="text-primary/70 text-[10px] font-bold tracking-[0.2em] uppercase">100% Complete</p>
+                        </div>
+                        <!-- Progress Bar -->
+                        <div class="w-full h-[1px] bg-white/10 mb-6">
+                            <div class="h-full bg-primary transition-all duration-500" style="width: 100%;"></div>
+                        </div>
+                        <!-- Bottom Row: Steps Nav (No Back Btn) -->
+                        <div class="flex justify-between items-center w-full gap-4">
+                            <div class="steps-nav-scroll text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">
+                                <span>01 Time</span>
+                                <span>02 Service</span>
+                                <span>03 Details</span>
+                                <span class="text-primary">04 Confirm</span>
+                            </div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div class="glass-panel rounded-[2.5rem] shadow-2xl border border-white/10 p-10 md:p-12 flex flex-col items-center text-center">
+                        <div class="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-10 ring-8 ring-primary/5">
+                            <span class="material-symbols-outlined text-primary text-5xl font-bold">check</span>
+                        </div>
+                        <h1 class="text-3xl font-display font-bold text-white mb-4 italic">You're Booked.</h1>
+                        <p class="text-slate-400 mb-10 max-w-sm leading-relaxed font-light">Your sanctuary is reserved. A
+                        confirmation detail has been sent to your digital inbox.</p>
+                        <div class="w-full bg-white/5 border border-white/10 rounded-2xl p-8 mb-10 text-center relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-2 opacity-5">
+                                <span class="material-symbols-outlined text-8xl">verified</span>
+                            </div>
+                            <p class="text-[10px] font-bold text-primary uppercase tracking-[0.3em] mb-3">Confirmation
+                            Reference</p>
+                            <p id="final-conf-num" class="text-4xl font-display font-bold text-white tracking-widest"></p>
+                        </div>
+                        <div id="final-details-grid" class="w-full space-y-6 text-left border-t border-white/5 pt-10">
+                            <div class="final-details-layout">
+                                <div>
+                                    <p class="final-field-title">Guest</p>
+                                    <p id="final-guest-name" class="final-field-value final-field-value-guest"></p>
+                                </div>
+                                <div>
+                                    <p class="final-field-title">Email</p>
+                                    <p id="final-guest-email" class="final-field-value final-field-value-truncate"></p>
+                                </div>
+                                <div>
+                                    <p class="final-field-title">Sanctuary Date</p>
+                                    <p id="final-slot-date" class="final-field-value"></p>
+                                </div>
+                                <div>
+                                    <p class="final-field-title">Time Allocated</p>
+                                    <p id="final-slot-time" class="final-field-value"></p>
+                                </div>
+                                <div class="final-total-row">
+                                    <span class="final-total-label">Total Sanctuary Fee</span>
+                                    <span id="final-total-price" class="final-total-amount"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-4 w-full mt-12">
+                            <button onclick="resetAll()" class="w-full bg-primary hover:brightness-110 text-background-dark font-bold py-6 rounded-full transition-all shadow-xl shadow-primary/20 text-xs uppercase tracking-widest active:scale-95">
+                                Book Another Session
+</button>
+                            <button onclick="handleHome()" class="text-slate-500 hover:text-white font-bold text-[10px] uppercase tracking-widest py-2 transition-all">
+                                Return to Home
+</button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <footer class="px-6 py-12 border-t border-white/5 text-center bg-black/10">
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em]">
+                © 2024 SERENITY MASSAGE | 256-BIT ENCRYPTED </p>
+            </footer>
+        </div>
+        <script>
+        // ── Supabase Config ───────────────────────────────────────────────
+        const SUPABASE_URL = 'https://chjeruoocmtjvopjajqk.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_ILZmZBLEtSXeGGdvSQMY9A_L0wErJT7';
+        const { createClient } = supabase;
+        const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ── Static Data ───────────────────────────────────────────────────
+        // Times are driven by Supabase available_dates — this list is a reference only
+        const TIMES = (function() {
+            var r = [], periods = ['AM','PM'];
+            for (var h = 4; h <= 23; h++) {
+                var p = h < 12 ? 'AM' : 'PM';
+                var hr = h === 0 ? 12 : (h > 12 ? h - 12 : h);
+                for (var m = 0; m < 60; m += 15) r.push(hr + ':' + (m < 10 ? '0'+m : m) + ' ' + p);
+            }
+            return r;
+        })();
+
+        const _SERVICES_DEFAULT = [
+            { id: 's1', cat: 'Massage', name: 'Therapeutic Massage', desc: 'Classic full-body relaxation using long, graceful strokes for ultimate peace.', prices: [{ dur: '1hr', p: 95 }, { dur: '1½hr', p: 140 }, { dur: '2hr', p: 180 }], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD42yGA-WSgIy2fTLOdQQMSRSisc2JoZDQ9HVURZq0VzIV6pSn77Gmrkr8BuGCIygYWbw3UKYQS-VCWYja4CmG63oHQmSEdutKz_SKadRFcTaMHt9TTTSOMos3KEeuDSM8IVEVempyHYM6MmEpfkXLangmhhVxDOUe55KUAX1eHgy9UEtQfDY4UGsR0V-55IGdkkKspuooSn17DinnW_E17Tnm6c3oP5BfKdk8k3pJj0QLmK5Rhmfj9FBvabWRicSwELXyJLWc7uqE' },
+            { id: 's2', cat: 'Massage', name: 'Swedish Massage', desc: ' ', prices: [{ dur: '1hr', p: 95 }, { dur: '1½hr', p: 140 }, { dur: '2hr', p: 180 }], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD42yGA-WSgIy2fTLOdQQMSRSisc2JoZDQ9HVURZq0VzIV6pSn77Gmrkr8BuGCIygYWbw3UKYQS-VCWYja4CmG63oHQmSEdutKz_SKadRFcTaMHt9TTTSOMos3KEeuDSM8IVEVempyHYM6MmEpfkXLangmhhVxDOUe55KUAX1eHgy9UEtQfDY4UGsR0V-55IGdkkKspuooSn17DinnW_E17Tnm6c3oP5BfKdk8k3pJj0QLmK5Rhmfj9FBvabWRicSwELXyJLWc7uqE' },
+            { id: 's3', cat: 'Massage', name: 'Thai Massage', desc: '', prices: [{ dur: '1hr', p: 140 }, { dur: '1½hr', p: 180 }], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDHvcr-Ikb9uQde37O2c5u9vhaFsDZ5gUcMVoq5gi6YAkiQmqCnIAV6R2hvvjDUwIndGdAlZYEUx8Fhw0YjEvyNSt-jsilqmURy7HX1nsG4bJQhdJwtP1FVdBXB0qxosqyUJ79z2fdkScIxFH7I2d-IU8qEDg6nQywcTfaNaaZqrQRTJhpafLjRxmz_EQ4ZnjyB60USD2BagL7h8RjPdZvzTpJu0P2GwvQGHna9y0nopMw28WDkeSEaHMFuYhtFFkXmgf0vISzvBoA' },
+            { id: 's4', cat: 'Massage', name: 'Bamboo Sticks', desc: '', prices: [{ dur: '1hr', p: 140 }, { dur: '1½hr', p: 180 }], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC183bN4befBBMJdjNZFUXzWe70sffyFfWgv3OM28dtYS42ao8wEBDu6FM3onW7qqifOrx5ShQwUR1c5EFAj_-dtx2k7dVhdnDRH5_10zcAojXKabV_ErrknJNYo2DHhfpYhqdFuG39lcIwD_h8MVrIaj7TCi883gKoCZi7MKclCfoTkeQFYFhohAFi1Mqxv46jrb44Zy0gPDzHGMkhDYxcAeJpVsrVPtoJLSbszAJC92vXuXyAGMETxHOZtB2uowmbBmyUz-e5Uec' },
+            { id: 's5', cat: 'Massage', name: 'Hot Stone Therapy', desc: 'Heated volcanic stones melt away tension and balance your energy centers.', prices: [{ dur: '1hr', p: 140 }, { dur: '1½hr', p: 180 }], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC183bN4befBBMJdjNZFUXzWe70sffyFfWgv3OM28dtYS42ao8wEBDu6FM3onW7qqifOrx5ShQwUR1c5EFAj_-dtx2k7dVhdnDRH5_10zcAojXKabV_ErrknJNYo2DHhfpYhqdFuG39lcIwD_h8MVrIaj7TCi883gKoCZi7MKclCfoTkeQFYFhohAFi1Mqxv46jrb44Zy0gPDzHGMkhDYxcAeJpVsrVPtoJLSbszAJC92vXuXyAGMETxHOZtB2uowmbBmyUz-e5Uec' },
+            { id: 's6', cat: 'Wellness', name: 'Reflexology', desc: 'Therapeutic pressure points focused on hands and feet to restore bodily balance.', prices: [{ dur: '1hr', p: 140 }, { dur: '1½hr', p: 180 }] },
+            { id: 's7', cat: 'Wellness', name: 'Cupping', desc: '', prices: [{ dur: '1hr', p: 140 }, { dur: '1½hr', p: 180 }] },
+            { id: 's8', cat: 'Wellness', name: 'Serenity Scrub', desc: '', prices: [{ dur: '1hr', p: 140 }, { dur: '1½hr', p: 180 }] },
+            { id: 's9', cat: 'Stretching', name: 'Fascia Stretch Therapy / FST', desc: '', prices: [{ dur: '½hr', p: 75 }, { dur: '1hr', p: 140 }] },
+            { id: 's10', cat: 'Category', name: 'Prenatal', desc: '', prices: [{ dur: '1hr', p: 95 }, { dur: '1½hr', p: 140 }, { dur: '2hr', p: 180 }], img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD42yGA-WSgIy2fTLOdQQMSRSisc2JoZDQ9HVURZq0VzIV6pSn77Gmrkr8BuGCIygYWbw3UKYQS-VCWYja4CmG63oHQmSEdutKz_SKadRFcTaMHt9TTTSOMos3KEeuDSM8IVEVempyHYM6MmEpfkXLangmhhVxDOUe55KUAX1eHgy9UEtQfDY4UGsR0V-55IGdkkKspuooSn17DinnW_E17Tnm6c3oP5BfKdk8k3pJj0QLmK5Rhmfj9FBvabWRicSwELXyJLWc7uqE' },
+
+        ];
+
+        // Loaded from Supabase; falls back to _SERVICES_DEFAULT if empty or offline
+        let SERVICES = [..._SERVICES_DEFAULT];
+
+        // ── Default Categories ────────────────────────────────────────────
+        const _CATEGORIES_DEFAULT = [
+            { id: 'c1', name: 'Massage',   sort_order: 1 },
+            { id: 'c2', name: 'Facial',    sort_order: 2 },
+            { id: 'c3', name: 'Wellness',  sort_order: 3 },
+            { id: 'c4', name: 'Stretching', sort_order: 4 },
+            { id: 'c5', name: 'Prenatal',  sort_order: 5 }
+        ];
+        let CATEGORIES = [..._CATEGORIES_DEFAULT];
+
+        const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        // ── State ─────────────────────────────────────────────────────────
+        let state = {
+            currentStep: 1,
+            day: null, // Date object
+            time: null,
+            svcId: null,
+            dur: null,
+            price: null,
+            selectedCategory: 'All'
+        };
+        let boardRefreshInterval = null; // auto-refresh timer for Step 1
+
+        // ── Navigation ────────────────────────────────────────────────────
+        function goTo(step) {
+            if (step === 2 && !state.time) return;
+            if (step === 3 && !state.svcId) return;
+
+            state.currentStep = step;
+            document.querySelectorAll('.step-section').forEach(s => s.classList.remove('step-active'));
+            document.getElementById('step-' + step).classList.add('step-active');
+
+            if (step === 1) { renderBoard(); startBoardRefresh(); }
+            else             { stopBoardRefresh(); }
+
+            if (step === 2) renderServices();
+            if (step === 3) renderFinalSummary();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ── Board Auto-Refresh (Step 1 only, every 30 s) ──────────────────
+        function startBoardRefresh() {
+            stopBoardRefresh(); // clear any existing timer first
+            boardRefreshInterval = setInterval(function () {
+                if (state.currentStep === 1) renderBoard();
+            }, 30000);
+        }
+
+        function stopBoardRefresh() {
+            if (boardRefreshInterval !== null) {
+                clearInterval(boardRefreshInterval);
+                boardRefreshInterval = null;
+            }
+        }
+
+        function handleHome() {
+            if (confirm('Return to home page? Any unsaved progress will be lost.')) {
+                window.location.href = '../index.html';
+            }
+        }
+
+        // ── Step 1: Calendar & Time ───────────────────────────────────────
+        function getAvailableDays() {
+            const days = [];
+            const d = new Date();
+            d.setDate(d.getDate() + 1);
+            while (days.length < 5) {
+                const dow = d.getDay();
+                if (dow !== 0 && dow !== 6) days.push(new Date(d));
+                d.setDate(d.getDate() + 1);
+            }
+            return days;
+        }
+
+        function toDateStr(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function isBookingConflictError(error) {
+            if (!error) return false;
+            const msg = (error.message || "").toLowerCase();
+            return error.code === "23505" || msg.includes("duplicate key") || msg.includes("unique constraint");
+        }
+
+        function makeSlotTakenError() {
+            const err = new Error("SLOT_TAKEN");
+            err.code = "SLOT_TAKEN";
+            return err;
+        }
+
+        async function renderBoard() {
+            const container = document.getElementById('board-container');
+            const monthDisplay = document.getElementById('current-month-display');
+            const errorEl = document.getElementById('board-error');
+            errorEl.classList.add('hidden');
+
+            // ── Load available dates from Supabase ────────────────────────
+            const todayStr = toDateStr(new Date());
+            let schedule = [];
+            try {
+                const { data, error } = await sb
+                    .from('available_dates')
+                    .select('*')
+                    .gte('date', todayStr)
+                    .order('date');
+                if (error) throw error;
+                schedule = data || [];
+            } catch (err) {
+                console.warn('Schedule fetch issue — falling back to auto days:', err);
+                // Fallback: auto-generate next 5 weekdays with default TIMES
+                schedule = getAvailableDays().map(function (d) {
+                    return { date: toDateStr(d), times: TIMES };
+                });
+            }
+
+            // ── No availability configured ────────────────────────────────
+            if (schedule.length === 0) {
+                container.innerHTML = '<div class="flex flex-col items-center justify-center py-16 gap-4 text-center"><span class="material-symbols-outlined text-4xl text-white/20">event_busy</span><p class="text-white/30 text-xs font-bold uppercase tracking-[0.2em]">No availability configured</p><p class="text-white/20 text-xs">Contact the spa for more information.</p></div>';
+                if (monthDisplay) monthDisplay.textContent = '';
+                return;
+            }
+
+            // ── Set month display from first available date ────────────────
+            const firstDate = new Date(schedule[0].date + 'T12:00:00');
+            if (monthDisplay) {
+                monthDisplay.textContent = MONTH_NAMES[firstDate.getMonth()] + ' ' + firstDate.getFullYear();
+            }
+
+            // ── Load booked slots for these dates ─────────────────────────
+            const dateStrings = schedule.map(function (s) { return s.date; });
+            let bookedSlots = new Set();
+            try {
+                const { data, error } = await sb
+                    .from('bookings')
+                    .select('slot_date, slot_time')
+                    .in('slot_date', dateStrings);
+                if (error) throw error;
+                if (data) data.forEach(function (row) { bookedSlots.add(row.slot_date + '|' + row.slot_time); });
+            } catch (err) {
+                console.warn('Bookings fetch issue:', err);
+                errorEl.textContent = 'Connecting to live schedule...';
+                errorEl.classList.remove('hidden');
+            }
+
+            // ── Render each configured day ─────────────────────────────────
+            let html = '<div class="flex justify-center gap-6 md:gap-8 min-w-max px-2 mx-auto">';
+            schedule.forEach(function (entry) {
+                const date = new Date(entry.date + 'T12:00:00');
+                const dStr = entry.date;
+                const times = Array.isArray(entry.times) ? entry.times : [];
+                const isSelectedDay = state.day && toDateStr(state.day) === dStr;
+
+                html += '<div class="flex flex-col w-[85px] md:w-[96px] shrink-0">' +
+                    '<div class="text-center pb-3 border-b border-primary/30 transition-all duration-500 mb-2 flex flex-col items-center">' +
+                        '<div class="text-[10px] font-semibold text-white/40 uppercase tracking-[0.14em] mb-1 leading-none">' + DAY_NAMES[date.getDay()] + '</div>' +
+                        '<div class="text-[32px] font-light text-[#f7eee2] leading-none text-shadow-sm mb-1">' + date.getDate() + '</div>' +
+                        '<div class="text-[11px] text-white/40 uppercase tracking-[0.1em] leading-none">' + MONTH_NAMES[date.getMonth()] + '</div>' +
+                    '</div>' +
+                    '<div class="flex flex-col">';
+
+                times.forEach(function (time) {
+                    const isBooked = bookedSlots.has(dStr + '|' + time);
+                    const isSelectedSlot = isSelectedDay && state.time === time;
+                    if (isBooked) {
+                        html += '<div class="h-[46px] flex items-center justify-center text-[11px] font-normal uppercase tracking-[0.04em] text-white/20 border-b border-white/5 last:border-b-0 cursor-default">Booked</div>';
+                    } else {
+                        html += '<button onclick="selectSlot(\'' + dStr + '\', \'' + time + '\')" class="h-[46px] flex items-center justify-center text-[14px] font-medium border-b border-white/5 last:border-b-0 transition-all ' + (isSelectedSlot ? 'text-primary scale-105 font-bold' : 'text-white/30 hover:text-primary') + '">' + time + '</button>';
+                    }
+                });
+
+                html += '</div></div>';
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function selectSlot(dateStr, time) {
+            state.day = new Date(dateStr + "T12:00:00");
+            state.time = time;
+            goTo(2);
+        }
+
+        // ── Category Tabs ─────────────────────────────────────────────────
+        function renderCategoryTabs() {
+            var container = document.getElementById('cat-tabs-container');
+            if (!container) return;
+            var html = '<button onclick="filterServices(\'All\')" id="cat-All" class="flex flex-col items-center justify-center border-b pb-4 px-2 hover:text-primary transition-colors cat-tab text-primary border-primary"><span class="text-[10px] font-bold uppercase tracking-[0.2em]">All Services</span></button>';
+            CATEGORIES.forEach(function (c) {
+                html += '<button onclick="filterServices(\'' + c.name + '\')" id="cat-' + c.name + '" class="flex flex-col items-center justify-center border-b border-transparent text-slate-400 pb-4 px-2 hover:text-primary transition-colors cat-tab"><span class="text-[10px] font-bold uppercase tracking-[0.2em]">' + c.name + '</span></button>';
+            });
+            container.innerHTML = html;
+        }
+
+        // ── Step 2: Services ──────────────────────────────────────────────
+        function filterServices(cat) {
+            state.selectedCategory = cat;
+            document.querySelectorAll('.cat-tab').forEach(t => {
+                t.classList.remove('text-primary', 'border-primary');
+                t.classList.add('text-slate-400', 'border-transparent');
+            });
+            const activeTab = document.getElementById('cat-' + cat);
+            activeTab.classList.remove('text-slate-400', 'border-transparent');
+            activeTab.classList.add('text-primary', 'border-primary');
+            renderServices();
+        }
+
+        function renderServices() {
+            const grid = document.getElementById('svc-grid');
+            const summaryText = document.getElementById('selected-time-summary');
+            const step3Btn = document.getElementById('btn-to-step-3');
+
+            if (state.day) {
+                summaryText.textContent = `${DAY_NAMES[state.day.getDay()]}, ${MONTH_NAMES[state.day.getMonth()]} ${state.day.getDate()} at ${state.time}`;
+            }
+
+            grid.innerHTML = '';
+            const filtered = state.selectedCategory === 'All'
+                ? SERVICES
+                : SERVICES.filter(s => s.cat === state.selectedCategory);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="glass-panel rounded-2xl p-6 border border-white/10 text-center text-sm text-slate-400">No services found in this category.</div>`;
+            }
+
+            filtered.forEach(svc => {
+                const isSelected = state.svcId === svc.id;
+                const card = document.createElement('div');
+                card.className = `svc-card glass-panel ${isSelected ? 'svc-card-selected' : ''}`;
+
+                const chips = svc.prices.map(p => {
+                    const isPriceSel = isSelected && state.dur === p.dur;
+                    return `<button onclick="selectPrice('${svc.id}', '${p.dur}', ${p.p}, event)" 
+                        class="svc-price-chip ${isPriceSel ? 'svc-price-chip-active' : ''}"
+                    >${p.dur} • $${p.p}</button>`;
+                }).join('');
+
+                card.innerHTML = `
+                    <div class="svc-card-body">
+                        <div class="flex flex-col gap-3">
+                            <div class="svc-meta-row">
+                                <span class="svc-cat-chip">${svc.cat}</span>
+                                ${isSelected ? '<span class="svc-selected-badge"><span class="material-symbols-outlined text-[10px]">check_circle</span> Selected</span>' : ''}
+                            </div>
+                            <h3 class="svc-title">${svc.name}</h3>
+                            <p class="svc-desc">${svc.desc}</p>
+                            <div class="svc-actions">
+                                ${chips}
+                                ${isSelected ? '<button onclick="goTo(3); event.stopPropagation();" class="svc-continue-btn">Continue <span class="material-symbols-outlined text-[11px]">arrow_forward</span></button>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    ${svc.img ? `<div class="svc-image ${isSelected ? 'svc-image-selected' : ''}" style="background-image: url('${svc.img}')"></div>` : ''}
+                `;
+                grid.appendChild(card);
+            });
+
+            step3Btn.disabled = !(state.svcId && state.dur);
+        }
+
+        function selectPrice(svcId, dur, price, e) {
+            e.stopPropagation();
+            state.svcId = svcId;
+            state.dur = dur;
+            state.price = price;
+            document.getElementById('btn-to-step-3').disabled = false;
+            renderServices();
+        }
+
+        // ── Step 3: Summary & Form ────────────────────────────────────────
+        function renderFinalSummary() {
+            const svc = SERVICES.find(s => s.id === state.svcId);
+            const dateStr = `${DAY_NAMES[state.day.getDay()]}, ${MONTH_NAMES[state.day.getMonth()]} ${state.day.getDate()}, ${state.day.getFullYear()}`;
+
+            const summaryEl = document.getElementById('booking-final-summary');
+            summaryEl.innerHTML = `
+                <div class="summary-card">
+                    <div class="summary-overlay"></div>
+                    <div class="summary-image" style="background-image: url('${svc.img || ''}')"></div>
+                    <div class="summary-content">
+                        <div class="space-y-2">
+                            <span class="summary-tag">Reserved Experience</span>
+                            <h3 class="summary-title">${svc.name}</h3>
+                            <p class="summary-price">$${state.price}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="summary-meta">
+                    <div class="summary-row">
+                        <span class="summary-label">Sanctuary Session</span>
+                        <span class="summary-value">${dateStr}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Selected Time</span>
+                        <span class="summary-value">${state.time} (${state.dur})</span>
+                    </div>
+                    <div class="summary-adjust-wrap">
+                        <button onclick="goTo(1)" class="summary-adjust-btn">
+                            <span class="material-symbols-outlined text-xs">edit_calendar</span> Adjust Schedule
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function confirmBooking() {
+            const errorEl = document.getElementById('submit-error');
+            errorEl.classList.add('hidden');
+
+            const name = document.getElementById('inp-name').value.trim();
+            const email = document.getElementById('inp-email').value.trim();
+            const phone = document.getElementById('inp-phone').value.trim();
+            const notes = document.getElementById('inp-notes').value.trim();
+
+            if (!name || !email || !phone) {
+                errorEl.textContent = "Details missing. Please complete all fields.";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            const btn = document.getElementById('btn-confirm');
+            btn.disabled = true;
+            btn.innerHTML = `<div class="spinner border-background-dark mr-3"></div> SECURING SESSION...`;
+
+            const confNum = 'SR-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+            const svc = SERVICES.find(s => s.id === state.svcId);
+            const dateStr = toDateStr(state.day);
+            const dateDisplay = `${DAY_NAMES[state.day.getDay()]}, ${MONTH_NAMES[state.day.getMonth()]} ${state.day.getDate()}`;
+
+            try {
+                const { data: existingSlot, error: checkErr } = await sb
+                    .from('bookings')
+                    .select('confirmation_number')
+                    .eq('slot_date', dateStr)
+                    .eq('slot_time', state.time)
+                    .limit(1)
+                    .maybeSingle();
+                if (checkErr && checkErr.code !== 'PGRST116') throw checkErr;
+                if (existingSlot) throw makeSlotTakenError();
+
+                const bookingPayload = {
+                    confirmation_number: confNum,
+                    slot_date: dateStr,
+                    slot_time: state.time,
+                    service_name: svc.name,
+                    duration: state.dur,
+                    price: state.price,
+                    client_name: name,
+                    client_phone: phone,
+                    client_email: email,
+                    notes: notes || null
+                }
+                // Uses atomic conflict handling when unique(slot_date, slot_time) exists.
+                let writeError = null;
+                let writeData = null;
+
+                const upsertAttempt = await sb
+                    .from('bookings')
+                    .upsert(bookingPayload, { onConflict: 'slot_date,slot_time', ignoreDuplicates: true })
+                    .select('confirmation_number');
+
+                if (upsertAttempt.error && upsertAttempt.error.code === '42P10') {
+                    // Fallback for projects that still don't have the unique constraint yet.
+                    const insertAttempt = await sb
+                        .from('bookings')
+                        .insert(bookingPayload)
+                        .select('confirmation_number');
+                    writeError = insertAttempt.error;
+                    writeData = insertAttempt.data;
+                } else {
+                    writeError = upsertAttempt.error;
+                    writeData = upsertAttempt.data;
+                }
+
+                if (writeError) {
+                    if (isBookingConflictError(writeError)) throw makeSlotTakenError();
+                    throw writeError;
+                }
+                if (!writeData || writeData.length === 0) {
+                    throw makeSlotTakenError();
+                }
+
+                const { error: emailError } = await sb.functions.invoke('send-booking-email', {
+                    body: {
+                        name, email, phone, confirmation_number: confNum,
+                        service_name: svc.name,
+                        slot_date: dateDisplay,
+                        slot_time: state.time,
+                        price: state.price,
+                        duration: state.dur
+                    }
+                });
+                if (emailError) {
+                    console.warn('Email function issue:', emailError);
+                }
+
+                document.getElementById('final-conf-num').textContent = confNum;
+                document.getElementById('final-guest-name').textContent = name;
+                document.getElementById('final-guest-email').textContent = email;
+                document.getElementById('final-slot-date').textContent = dateDisplay;
+                document.getElementById('final-slot-time').textContent = `${state.time} (${state.dur})`;
+                document.getElementById('final-total-price').textContent = `$${state.price}`;
+                goTo(4);
+
+            } catch (err) {
+                console.error('Booking err:', err);
+                if (err && (err.code === 'SLOT_TAKEN' || err.message === 'SLOT_TAKEN')) {
+                    errorEl.textContent = "That time was just booked. Please pick another available slot.";
+                } else {
+                    errorEl.textContent = "Connectivity issue. Please try again or call us.";
+                }
+                errorEl.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = `<span class="tracking-widest uppercase text-xs">Confirm My Session</span> <span class="material-symbols-outlined">check_circle</span>`;
+            }
+        }
+
+        function resetAll() {
+            location.reload();
+        }
+
+        // ── Init ──────────────────────────────────────────────────────────
+        (async function () {
+            if (window.self !== window.top) {
+                document.body.classList.add('is-iframe');
+            }
+            try {
+                const { data: svcData, error: svcErr } = await sb
+                    .from('services')
+                    .select('*')
+                    .order('sort_order');
+                if (!svcErr && svcData && svcData.length > 0) {
+                    SERVICES = svcData.map(function (r) {
+                        return {
+                            id: r.id,
+                            cat: r.cat,
+                            name: r.name,
+                            desc: r.description || '',
+                            img: r.img || '',
+                            prices: r.prices || []
+                        };
+                    });
+                }
+            } catch (e) {
+                console.warn('Supabase services load failed — using defaults:', e);
+            }
+            try {
+                const { data: catData, error: catErr } = await sb
+                    .from('categories')
+                    .select('*')
+                    .order('sort_order');
+                if (!catErr && catData && catData.length > 0) {
+                    CATEGORIES = catData;
+                }
+            } catch (e) {
+                console.warn('Supabase categories load failed — using defaults:', e);
+            }
+            renderCategoryTabs();
+            renderBoard();
+            startBoardRefresh(); // begin 30-second auto-refresh while on Step 1
+        })();
+    </script>
+    </body>
+</html>
